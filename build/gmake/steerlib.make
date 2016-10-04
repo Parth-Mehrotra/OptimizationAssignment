@@ -26,9 +26,9 @@ ifeq ($(config),debug)
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DDEBUG
   INCLUDES  += -I../../steerlib/include -I../../external -I../../steerlib/include/util -I../../util/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -fPIC -std=c++0x -ggdb
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -fPIC -std=c++11 -g -std=c++0x -ggdb
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/max/steersuite-rutgers/build/lib -L../lib
+  LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/steersuite-rutgers/build/lib -L../lib
   LIBS      += -lutil -ltinyxml
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += ../lib/libutil.so ../lib/libtinyxml.so
@@ -48,9 +48,9 @@ ifeq ($(config),release)
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DNDEBUG
   INCLUDES  += -I../../steerlib/include -I../../external -I../../steerlib/include/util -I../../util/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -fPIC -std=c++0x -ggdb
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -fPIC -std=c++11 -g -std=c++0x -ggdb
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/max/steersuite-rutgers/build/lib -L../lib
+  LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/steersuite-rutgers/build/lib -L../lib
   LIBS      += -lutil -ltinyxml
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += ../lib/libutil.so ../lib/libtinyxml.so
@@ -79,6 +79,7 @@ OBJECTS := \
 	$(OBJDIR)/DynamicLibrary.o \
 	$(OBJDIR)/SimulationMetricsCollector.o \
 	$(OBJDIR)/TestCaseReaderPrivate.o \
+	$(OBJDIR)/GJK_EPA.o \
 	$(OBJDIR)/AgentInterface.o \
 	$(OBJDIR)/SimulationRecorderModule.o \
 	$(OBJDIR)/XMLParser.o \
@@ -210,6 +211,9 @@ $(OBJDIR)/SimulationMetricsCollector.o: ../../steerlib/src/SimulationMetricsColl
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/TestCaseReaderPrivate.o: ../../steerlib/src/TestCaseReaderPrivate.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/GJK_EPA.o: ../../steerlib/src/GJK_EPA.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/AgentInterface.o: ../../steerlib/src/AgentInterface.cpp

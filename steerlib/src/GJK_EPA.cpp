@@ -186,12 +186,60 @@ bool SteerLib::GJK_EPA::GJK(const std::vector<Util::Vector>& _shapeA, const std:
 	}
 }
 
-/*EPA(Polygon A, Polygon B, Simplex S)
-*  {
-*      Calculate penetration
-*      return (penetration_depth, penetration_vector)
-*  }
-*/
+int findNeerestEdgeToOrigin(std::vector<Util::Vector> polytope) {
+	double distance = std::numeric_limits<double>::max();
+	int index = 0;
+	for (int i = 0; i < polytope.size(); i++) {
+		int j = (i+1) == polytope.size() ? 0 : i+1;
+		Util::Vector a = polytope[i];
+		Util::Vector b = polytope[j];
+		Util::Vector c = b-a;
+
+		Util::Vector to_origin = cross((cross(a, c)), a);
+		float distance_to_origin = to_origin*a;
+		if (distance_to_origin < distance) {
+			distance = distance_to_origin;
+			index = i;
+		}
+	}
+	return index;
+}
+
+Util::Vector SteerLib::GJK_EPA::penetration_vector(std::vector<Util::Vector> A, std::vector<Util::Vector> B, std::vector<Util::Vector> simplex) {
+	while (true) {
+	  // obtain the feature (edge for 2D) closest to the 
+	  // origin on the Minkowski Difference
+
+	  int index = findNeerestEdgeToOrigin(simplex);
+	  int index2 = index + 1;
+	  if (index2 == simplex.size()) {
+		index2 = 0;
+	  }
+	  // obtain a new support point in the direction of the edge normal
+	 
+	  Util::Vector edge = simplex[index] - simplex[index2];
+
+	  Util::Vector p = getSupport(A, A.size(), cross(Util::Vector(0, 1, 0), edge)) - getSupport(B, B.size(), -cross(Util::Vector(0, 1, 0), edge));
+	  // check the distance from the origin to the edge against the
+	  // distance p is along e.normal
+	  double d = p*(cross(Util::Vector(0,1,0), edge));
+	  if (d - edge.length() < 0.0001) {
+	    // the tolerance should be something positive close to zero (ex. 0.00001)
+
+	    // if the difference is less than the tolerance then we can
+	    // assume that we cannot expand the simplex any further and
+	    // we have our solution
+	    Util::Vector normal = cross(edge, Util::Vector(0, 1, 0));
+	    return (normal / normal.length()) * d;
+	  } else {
+	    // we haven't reached the edge of the Minkowski Difference
+	    // so continue expanding by adding the new point to the simplex
+	    // in between the points that made the closest edge
+	    simplex.insert(simplex.begin()+index, p);
+	  }
+	}
+}
+
 
 
 //RETURNS: true if collision
@@ -205,8 +253,8 @@ bool SteerLib::GJK_EPA::intersect(float& return_penetration_depth, Util::Vector&
 	std::vector<Util::Vector> simplex;
 	float isColliding = GJK(_shapeA, _shapeB, simplex);
 	if (isColliding == true) {
-		// (penetration_depth, penetration_vector) = EPA(A, B, Simplex)
-		//return (true, penetration_depth, penetration_vector)
+		return_penetration_vector = penetration_vector(_shapeA, _shapeA, simplex);
+		return_penetration_depth = return_penetration_vector.length();
 		return true;
 	}
 	else {

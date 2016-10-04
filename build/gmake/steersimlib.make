@@ -26,9 +26,9 @@ ifeq ($(config),debug)
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DDEBUG
   INCLUDES  += -I../../steerlib/include -I../../steersimlib/include -I../../external -I../../util/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -fPIC -std=c++0x -ggdb `pkg-config --cflags gl` `pkg-config --cflags glu` -fPIC
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -fPIC -std=c++11 -g -std=c++0x -ggdb `pkg-config --cflags gl` `pkg-config --cflags glu` -fPIC
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/max/steersuite-rutgers/build/lib `pkg-config --libs gl` `pkg-config --libs glu` -fPIC -L../lib
+  LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/steersuite-rutgers/build/lib `pkg-config --libs gl` `pkg-config --libs glu` -fPIC -L../lib
   LIBS      += -lsteerlib -lutil -lglfw -lXrandr -lX11 -ldl -lpthread -ltinyxml
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += ../lib/libsteerlib.so ../lib/libutil.so ../lib/libglfw.so ../lib/libtinyxml.so
@@ -48,9 +48,9 @@ ifeq ($(config),release)
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DNDEBUG
   INCLUDES  += -I../../steerlib/include -I../../steersimlib/include -I../../external -I../../util/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -fPIC -std=c++0x -ggdb `pkg-config --cflags gl` `pkg-config --cflags glu` -fPIC
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -fPIC -std=c++11 -g -std=c++0x -ggdb `pkg-config --cflags gl` `pkg-config --cflags glu` -fPIC
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/max/steersuite-rutgers/build/lib `pkg-config --libs gl` `pkg-config --libs glu` -fPIC -L../lib
+  LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/steersuite-rutgers/build/lib `pkg-config --libs gl` `pkg-config --libs glu` -fPIC -L../lib
   LIBS      += -lsteerlib -lutil -lglfw -lXrandr -lX11 -ldl -lpthread -ltinyxml
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
   LDDEPS    += ../lib/libsteerlib.so ../lib/libutil.so ../lib/libglfw.so ../lib/libtinyxml.so

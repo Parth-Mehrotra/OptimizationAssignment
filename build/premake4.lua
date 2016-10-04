@@ -51,6 +51,7 @@ solution "steersuite"
 		targetdir ( "bin" )
 
 	configuration { "linux" }
+		buildoptions { "-std=c++11 -g" }
 		linkoptions { 
 			-- "-stdlib=libc++" ,
 			"-Wl,-rpath," .. path.getabsolute("lib")

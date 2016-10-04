@@ -20,18 +20,18 @@ ifndef AR
 endif
 
 ifeq ($(config),debug)
-  OBJDIR     = obj/Debug/steersim
-  TARGETDIR  = ../bin
-  TARGET     = $(TARGETDIR)/steersim
+  OBJDIR     = obj/Debug/collisionAI
+  TARGETDIR  = ../lib
+  TARGET     = $(TARGETDIR)/libcollisionAI.so
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DDEBUG
-  INCLUDES  += -I../../steerlib/include -I../../steersim/include -I../../steersimlib/include -I../../external -I../../util/include
+  INCLUDES  += -I../../steerlib/include -I../../collisionAI/include -I../../external -I../../util/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -std=c++11 -g -std=c++0x -ggdb `pkg-config --cflags gl` `pkg-config --cflags glu`
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -fPIC -std=c++11 -g
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -Wl,-rpath,/home/parthmehrotra/steersuite-rutgers/build/lib `pkg-config --libs gl` `pkg-config --libs glu` -L../lib
-  LIBS      += -lsteerlib -lsteersimlib -lutil -lglfw -lX11 -ltinyxml -ldl -lpthread
+  LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/steersuite-rutgers/build/lib -L../lib
+  LIBS      += -lsteerlib -lutil
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
-  LDDEPS    += ../lib/libsteerlib.so ../lib/libsteersimlib.so ../lib/libutil.so ../lib/libglfw.so ../lib/libtinyxml.so
+  LDDEPS    += ../lib/libsteerlib.so ../lib/libutil.so
   LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -42,18 +42,18 @@ ifeq ($(config),debug)
 endif
 
 ifeq ($(config),release)
-  OBJDIR     = obj/Release/steersim
-  TARGETDIR  = ../bin
-  TARGET     = $(TARGETDIR)/steersim
+  OBJDIR     = obj/Release/collisionAI
+  TARGETDIR  = ../lib
+  TARGET     = $(TARGETDIR)/libcollisionAI.so
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DNDEBUG
-  INCLUDES  += -I../../steerlib/include -I../../steersim/include -I../../steersimlib/include -I../../external -I../../util/include
+  INCLUDES  += -I../../steerlib/include -I../../collisionAI/include -I../../external -I../../util/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -std=c++11 -g -std=c++0x -ggdb `pkg-config --cflags gl` `pkg-config --cflags glu`
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -fPIC -std=c++11 -g
   CXXFLAGS  += $(CFLAGS) 
-  LDFLAGS   += -Wl,-rpath,/home/parthmehrotra/steersuite-rutgers/build/lib `pkg-config --libs gl` `pkg-config --libs glu` -L../lib
-  LIBS      += -lsteerlib -lsteersimlib -lutil -lglfw -lX11 -ltinyxml -ldl -lpthread
+  LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/steersuite-rutgers/build/lib -L../lib
+  LIBS      += -lsteerlib -lutil
   RESFLAGS  += $(DEFINES) $(INCLUDES) 
-  LDDEPS    += ../lib/libsteerlib.so ../lib/libsteersimlib.so ../lib/libutil.so ../lib/libglfw.so ../lib/libtinyxml.so
+  LDDEPS    += ../lib/libsteerlib.so ../lib/libutil.so
   LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
   define PREBUILDCMDS
   endef
@@ -64,7 +64,8 @@ ifeq ($(config),release)
 endif
 
 OBJECTS := \
-	$(OBJDIR)/Main.o \
+	$(OBJDIR)/CollisionAIModule.o \
+	$(OBJDIR)/CollisionAgent.o \
 
 RESOURCES := \
 
@@ -82,7 +83,7 @@ all: $(TARGETDIR) $(OBJDIR) prebuild prelink $(TARGET)
 	@:
 
 $(TARGET): $(GCH) $(OBJECTS) $(LDDEPS) $(RESOURCES)
-	@echo Linking steersim
+	@echo Linking collisionAI
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
@@ -103,7 +104,7 @@ else
 endif
 
 clean:
-	@echo Cleaning steersim
+	@echo Cleaning collisionAI
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -125,7 +126,10 @@ $(GCH): $(PCH)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 endif
 
-$(OBJDIR)/Main.o: ../../steersim/src/Main.cpp
+$(OBJDIR)/CollisionAIModule.o: ../../collisionAI/src/CollisionAIModule.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/CollisionAgent.o: ../../collisionAI/src/CollisionAgent.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
