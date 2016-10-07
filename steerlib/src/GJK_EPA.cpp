@@ -137,7 +137,7 @@ bool SteerLib::GJK_EPA::doSimplex(std::vector<Util::Vector> &list, Util::Vector 
 
 //RETURNS: true if collides,SIMPLEX
 // false if doesnt collide, null
-bool SteerLib::GJK_EPA::GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector> simplex) {
+bool SteerLib::GJK_EPA::GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex) {
 	std::cout << "GJK--------------------" << std::endl;
 	for (int i = 0; i < _shapeA.size(); i++) {
 		std::cout << "shapeA:" << _shapeA[i] << std::endl;
@@ -195,8 +195,10 @@ int findNeerestEdgeToOrigin(std::vector<Util::Vector> polytope) {
 		Util::Vector b = polytope[j];
 		Util::Vector c = b-a;
 
-		Util::Vector to_origin = cross((cross(a, c)), a);
-		float distance_to_origin = to_origin*a;
+		Util::Vector n = normalize(cross((cross(c, a)), c));
+		float distance_to_origin = n*a;
+		std::cout << "edge: " << i << ", distance: " << distance_to_origin << std::endl;
+		std::cout << "n.x: " << n.x << ", n.y: " << n.y << ", n.z: " << n.z << std::endl;
 		if (distance_to_origin < distance) {
 			distance = distance_to_origin;
 			index = i;
@@ -223,7 +225,7 @@ Util::Vector SteerLib::GJK_EPA::penetration_vector(std::vector<Util::Vector> A, 
 	  // check the distance from the origin to the edge against the
 	  // distance p is along e.normal
 	  double d = p*(cross(Util::Vector(0,1,0), edge));
-	  if (d - edge.length() < 0.0001) {
+	  if (d - edge.length() < 1) {
 	    // the tolerance should be something positive close to zero (ex. 0.00001)
 
 	    // if the difference is less than the tolerance then we can
@@ -248,19 +250,34 @@ Util::Vector SteerLib::GJK_EPA::penetration_vector(std::vector<Util::Vector> A, 
 //			 INPUT: _shapeA: shape A. array of vector points: which have x, y, z components
 //			 INPUT: _shapeB: shape B. array of vector points: which have x, y, z components
 //Look at the GJK_EPA.h header file for documentation and instructions
-bool SteerLib::GJK_EPA::intersect(float& return_penetration_depth, Util::Vector& return_penetration_vector, const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB)
-{
-	std::vector<Util::Vector> simplex;
-	float isColliding = GJK(_shapeA, _shapeB, simplex);
-	if (isColliding == true) {
-		return_penetration_vector = penetration_vector(_shapeA, _shapeA, simplex);
-		return_penetration_depth = return_penetration_vector.length();
-		return true;
-	}
-	else {
-		return_penetration_depth = 0;
-		return_penetration_vector.zero();
-		return false;
-	}
+bool SteerLib::GJK_EPA::intersect(float& return_penetration_depth, Util::Vector& return_penetration_vector, const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB) {
+	std::vector<Util::Vector> shape;
+//		shape.push_back(Util::Vector(0, 0, 2));
+//		shape.push_back(Util::Vector(3, 0, 2));
+//		shape.push_back(Util::Vector(3, 0, -4));
+//		shape.push_back(Util::Vector(-2, 0, -4));
+//		shape.push_back(Util::Vector(-2, 0, 0));
+
+	shape.push_back(Util::Vector(-5, 0, 5));
+	shape.push_back(Util::Vector(5, 0, 5));
+//	shape.push_back(Util::Vector(-2, 0, 1));
+//	shape.push_back(Util::Vector(2, 0, 1));
+//	shape.push_back(Util::Vector(2, 0, -2));
+//	shape.push_back(Util::Vector(-2, 0, -2));
+	
+	std::cout << "closest edge" << findNeerestEdgeToOrigin(shape) << std::endl;
+
+//	std::vector<Util::Vector> simplex;
+//	float isColliding = GJK(_shapeA, _shapeB, simplex);
+//	if (isColliding == true) {
+//		return_penetration_vector = penetration_vector(_shapeA, _shapeA, simplex);
+//		return_penetration_depth = return_penetration_vector.length();
+//		return true;
+//	}
+//	else {
+//		return_penetration_depth = 0;
+//		return_penetration_vector.zero();
+//		return false;
+//	}
 }
 

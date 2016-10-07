@@ -28,7 +28,7 @@ namespace SteerLib
 
 		//helpers:
 		static bool doSimplex(std::vector<Util::Vector> &list, Util::Vector &d);
-		static bool GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector> simplex);
+		static bool GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex);
 		static Util::Vector getSupport(std::vector<Util::Vector> vertices, int count, Util::Vector d);
 		static Util::Vector penetration_vector(std::vector<Util::Vector>, std::vector<Util::Vector>, std::vector<Util::Vector>);
 		//static std::vector<Util::Vector>> minkowskiDifference(std::vector<Util::Vector>& _shapeA, std::vector<Util::Vector>& _shapeB);
