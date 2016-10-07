@@ -137,7 +137,7 @@ bool SteerLib::GJK_EPA::doSimplex(std::vector<Util::Vector> &list, Util::Vector 
 
 //RETURNS: true if collides,SIMPLEX
 // false if doesnt collide, null
-bool SteerLib::GJK_EPA::GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector> simplex) {
+bool SteerLib::GJK_EPA::GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex) {
 	std::cout << "GJK--------------------" << std::endl;
 	for (int i = 0; i < _shapeA.size(); i++) {
 		std::cout << "shapeA:" << _shapeA[i] << std::endl;
@@ -186,18 +186,36 @@ bool SteerLib::GJK_EPA::GJK(const std::vector<Util::Vector>& _shapeA, const std:
 	}
 }
 
-int findNeerestEdgeToOrigin(std::vector<Util::Vector> polytope) {
+int findNeerestEdgeToOrigin(std::vector<Util::Vector> polytope, float &distanceToEdge) {
 	double distance = std::numeric_limits<double>::max();
 	int index = 0;
+	float distance_to_origin;
+	std::cout << "lets do this----------------" <<std::endl;
 	for (int i = 0; i < polytope.size(); i++) {
-		int j = (i+1) == polytope.size() ? 0 : i+1;
+
+		int j;
+		if (i + 1 == polytope.size()) {
+			j = 0;
+		}
+		else {
+			j = i + 1;
+		}
 		Util::Vector a = polytope[i];
 		Util::Vector b = polytope[j];
 		Util::Vector c = b-a;
 
-		Util::Vector to_origin = cross((cross(a, c)), a);
-		float distance_to_origin = to_origin*a;
+		std::cout << "a: " << a << std::endl;
+		std::cout << "b: " << b << std::endl;
+
+		Util::Vector to_origin = cross((cross(c, a)), c);
+		std::cout<<"to_origin="<< to_origin<<std::endl;
+		to_origin=normalize(to_origin);
+		std::cout << "to_origin normalized=" << to_origin << std::endl;
+		distance_to_origin = to_origin*a;
+		std::cout << "distance_to_origin=" << distance_to_origin << std::endl;
 		if (distance_to_origin < distance) {
+			distanceToEdge = distance_to_origin;
+			std::cout << "distanceToEdge in method;" << distanceToEdge << std::endl;
 			distance = distance_to_origin;
 			index = i;
 		}
@@ -206,38 +224,95 @@ int findNeerestEdgeToOrigin(std::vector<Util::Vector> polytope) {
 }
 
 Util::Vector SteerLib::GJK_EPA::penetration_vector(std::vector<Util::Vector> A, std::vector<Util::Vector> B, std::vector<Util::Vector> simplex) {
-	while (true) {
+	std::cout << "---------EPA---------" << std::endl;
+	//simplex = std::vector<Util::Vector>;
+	/*simplex.clear;
+	simplex.push_back( Util::Vector(4, 0, 2));
+	simplex.push_back( Util::Vector(-8, 0, -2));
+	simplex.push_back(Util::Vector(-1, 0, -2));
+	*/
+	for (int i = 0; i < simplex.size(); i++) {
+		std::cout << "simplex at " <<i << ":" << simplex[i]<<std::endl;
+	}
+
+	for (int i = 0; i < A.size(); i++) {
+		std::cout << "shapeA at " << i << ":" << A[i] << std::endl;
+	}
+	
+	for (int i = 0; i < B.size(); i++) {
+		std::cout << "shapeB at " << i << ":" << B[i] << std::endl;
+	}
+
+	int i = 0;
+
+	float distanceToEdge=0;
+
+	while (i<2) {
+
+		
 	  // obtain the feature (edge for 2D) closest to the 
 	  // origin on the Minkowski Difference
 
-	  int index = findNeerestEdgeToOrigin(simplex);
+	//find index of first point in nearest edge
+	  int index = findNeerestEdgeToOrigin(simplex,distanceToEdge);
+	  //find index of second point in nearest edge
 	  int index2 = index + 1;
 	  if (index2 == simplex.size()) {
 		index2 = 0;
 	  }
 	  // obtain a new support point in the direction of the edge normal
-	 
-	  Util::Vector edge = simplex[index] - simplex[index2];
+	  /*if (i == 0) {
+		  index = 1;
+		  index2 = 2;
+	  }
+	  else if (i == 1) {
+		  index = 0;
+		  index2 = 1;
+	  }*/
 
-	  Util::Vector p = getSupport(A, A.size(), cross(Util::Vector(0, 1, 0), edge)) - getSupport(B, B.size(), -cross(Util::Vector(0, 1, 0), edge));
+	  std::cout << "index1;" << index << std::endl;
+	  std::cout << "index2;" << index2 << std::endl;
+	  std::cout << "simplex at index1;" << simplex[index] << std::endl;
+	  std::cout << "simplex at index2;" << simplex[index2] << std::endl;
+
+	  //nearest edge to origin
+	  Util::Vector nearestEdge = simplex[index] - simplex[index2];
+	  std::cout << "nearestEdge;" << nearestEdge << std::endl;
+
+	  //normal of nearestEdge:
+	  Util::Vector nearestEdgeNormal = cross(Util::Vector(0, 1, 0), nearestEdge);
+	  std::cout << "nearestEdgeNormal;" << nearestEdgeNormal << std::endl;
+
+	  //get support point
+	  Util::Vector point = getSupport(A, A.size(), nearestEdgeNormal) - getSupport(B, B.size(), -nearestEdgeNormal);
+	  std::cout << "point;" << point << std::endl;
 	  // check the distance from the origin to the edge against the
 	  // distance p is along e.normal
-	  double d = p*(cross(Util::Vector(0,1,0), edge));
-	  if (d - edge.length() < 0.0001) {
+	  double distancePoint = point*nearestEdgeNormal;
+	  std::cout << "distance;" << distancePoint << std::endl;
+	std::cout << "distanceToEdge by reference;" << distanceToEdge << std::endl;
+
+	  if (distancePoint -distanceToEdge< 0.0001) {
+		  std::cout << "we done"<< std::endl;
 	    // the tolerance should be something positive close to zero (ex. 0.00001)
 
 	    // if the difference is less than the tolerance then we can
 	    // assume that we cannot expand the simplex any further and
 	    // we have our solution
-	    Util::Vector normal = cross(edge, Util::Vector(0, 1, 0));
-	    return (normal / normal.length()) * d;
+	    Util::Vector normal = cross(nearestEdge, Util::Vector(0, 1, 0));
+	    return (normal / normal.length()) * distanceToEdge;
 	  } else {
 	    // we haven't reached the edge of the Minkowski Difference
 	    // so continue expanding by adding the new point to the simplex
 	    // in between the points that made the closest edge
-	    simplex.insert(simplex.begin()+index, p);
+	    simplex.insert(simplex.begin()+index+1, point);
 	  }
+
+
+	  i++;
 	}
+	
+
 }
 
 
@@ -250,10 +325,14 @@ Util::Vector SteerLib::GJK_EPA::penetration_vector(std::vector<Util::Vector> A, 
 //Look at the GJK_EPA.h header file for documentation and instructions
 bool SteerLib::GJK_EPA::intersect(float& return_penetration_depth, Util::Vector& return_penetration_vector, const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB)
 {
+	//temp-------------------------
+
+	//-------------------------------1
+
 	std::vector<Util::Vector> simplex;
 	float isColliding = GJK(_shapeA, _shapeB, simplex);
 	if (isColliding == true) {
-		return_penetration_vector = penetration_vector(_shapeA, _shapeA, simplex);
+		return_penetration_vector = penetration_vector(_shapeA, _shapeB, simplex);
 		return_penetration_depth = return_penetration_vector.length();
 		return true;
 	}
