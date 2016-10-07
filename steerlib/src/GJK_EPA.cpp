@@ -29,12 +29,12 @@ bool SteerLib::GJK_EPA::doSimplex(std::vector<Util::Vector> &list, Util::Vector 
 
 	//line case
 	if (list.size() == 2) {
-		//std::cout << "print points: " << "Point B:"<< list[0] << "Point A:" << list[1] << std::endl;
+		
 		//AB->
 		Util::Vector pointA = list[1];
 		Util::Vector pointB = list[0];
 		Util::Vector vectorAB = pointB - pointA;
-		std::cout << "vectorAB:" << vectorAB << std::endl;
+	
 		Util::Vector vectorAO = -pointA;
 
 		//if AB.A0>0
@@ -138,40 +138,27 @@ bool SteerLib::GJK_EPA::doSimplex(std::vector<Util::Vector> &list, Util::Vector 
 //RETURNS: true if collides,SIMPLEX
 // false if doesnt collide, null
 bool SteerLib::GJK_EPA::GJK(const std::vector<Util::Vector>& _shapeA, const std::vector<Util::Vector>& _shapeB, std::vector<Util::Vector>& simplex) {
-	std::cout << "GJK--------------------" << std::endl;
-	for (int i = 0; i < _shapeA.size(); i++) {
-		std::cout << "shapeA:" << _shapeA[i] << std::endl;
-	}
-	for (int i = 0; i < _shapeB.size(); i++) {
-		std::cout << "shapeB:" << _shapeB[i] << std::endl;
-	}
+	
 	//get some d: (1,0,1) for example
 	Util::Vector d(1, 0, 1);
 	//S=Support(A,D)-Support(B,-D)
 	Util::Vector point = getSupport(_shapeA, _shapeA.size(), d) - getSupport(_shapeB, _shapeB.size(), -d);
-	std::cout << "support of A:" << getSupport(_shapeA, _shapeA.size(), d) << std::endl;
-	std::cout << "support of B:" << getSupport(_shapeB, _shapeB.size(), -d) << std::endl;
-	
-	std::cout << "---------------------------"<< std::endl;
-	
 
 	//[]=S
 	std::vector<Util::Vector> list;
 	list.push_back(point);
-	std::cout << "pointB:" << list[0] << std::endl;
+	
 
 	//D=-S
 	Util::Vector direction = -point;//(-point.x, -point.y, -point.z);
-	//std::cout << "direction:" << direction << std::endl;
+	
 	
 	while (true) {
-		for (int i = 0; i < list.size(); i++) {
-			std::cout << "LISTING:" << list[i] << std::endl;
-		}
+		
 
 		Util::Vector pointA = getSupport(_shapeA, _shapeA.size(), direction) - getSupport(_shapeB, _shapeB.size(), -direction);
 		//if dot product between pointA and direction <0
-		std::cout << "pointA:" << pointA << std::endl;
+		
 		//int n;
 		//std::cin >> n;
 		if (pointA*direction < 0) {
@@ -247,7 +234,7 @@ Util::Vector SteerLib::GJK_EPA::penetration_vector(std::vector<Util::Vector> A, 
 
 	float distanceToEdge=0;
 
-	while (i<2) {
+	while (true) {
 
 		
 	  // obtain the feature (edge for 2D) closest to the 
@@ -283,15 +270,17 @@ Util::Vector SteerLib::GJK_EPA::penetration_vector(std::vector<Util::Vector> A, 
 	  Util::Vector nearestEdgeNormal = cross(Util::Vector(0, 1, 0), nearestEdge);
 	  std::cout << "nearestEdgeNormal;" << nearestEdgeNormal << std::endl;
 
+	  Util::Vector normalizedNearestEdgeNormal = normalize(nearestEdgeNormal);
+	  std::cout << "normalizedNearestEdgeNormal;" << normalizedNearestEdgeNormal << std::endl;
+
 	  //get support point
 	  Util::Vector point = getSupport(A, A.size(), nearestEdgeNormal) - getSupport(B, B.size(), -nearestEdgeNormal);
 	  std::cout << "point;" << point << std::endl;
 	  // check the distance from the origin to the edge against the
 	  // distance p is along e.normal
-	  double distancePoint = point*nearestEdgeNormal;
-	  std::cout << "distance;" << distancePoint << std::endl;
+	  double distancePoint = point*normalizedNearestEdgeNormal;
+	  std::cout << "distancePoint;" << distancePoint << std::endl;
 	std::cout << "distanceToEdge by reference;" << distanceToEdge << std::endl;
-
 	  if (distancePoint -distanceToEdge< 0.0001) {
 		  std::cout << "we done"<< std::endl;
 	    // the tolerance should be something positive close to zero (ex. 0.00001)
