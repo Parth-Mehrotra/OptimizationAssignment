@@ -32,6 +32,12 @@
 class SocialForcesAgent : public SteerLib::AgentInterface
 {
 public:
+
+	//figure out what type of agent it is if Pursuer/Evade
+	bool isPursuer;
+	bool isGuyToPursue;
+	bool isGuyToEvade;
+
 	SocialForcesAgent();
 	~SocialForcesAgent();
 	void reset(const SteerLib::AgentInitialConditions & initialConditions, SteerLib::EngineInterface * engineInfo);
