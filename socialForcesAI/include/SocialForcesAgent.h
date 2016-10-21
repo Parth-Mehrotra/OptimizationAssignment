@@ -112,7 +112,10 @@ private:
 
 	Util::Vector prefferedPursuerForce(float timeStamp, float dt, unsigned int frameNumber);
 	Util::Vector prefferedFleeForce(float timeStamp, float dt, unsigned int frameNumber);
+<<<<<<< HEAD
 	Util::Vector prefferedfollowLeaderForce(float timeStamp, float dt, unsigned int frameNumber);
+=======
+>>>>>>> 8b1ba190d5cec5e87d7a6795db6e1602ddfd4fe6
 	Util::Vector calcRepulsionForceFleeing(float dt);
 	Util::Vector calcRepulsionForceEvading(float dt);
 	Util::Vector calcWallRepulsionForceFleeing(float dt);
