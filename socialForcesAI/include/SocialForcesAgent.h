@@ -109,10 +109,10 @@ private:
 
 	Util::Vector prefferedPursuerForce(float timeStamp, float dt, unsigned int frameNumber);
 	Util::Vector prefferedFleeForce(float timeStamp, float dt, unsigned int frameNumber);
-	Util::Vector SocialForcesAgent::calcRepulsionForceFleeing(float dt);
-	Util::Vector SocialForcesAgent::calcRepulsionForceEvading(float dt);
-	Util::Vector SocialForcesAgent::calcWallRepulsionForceFleeing(float dt);
-	Util::Vector SocialForcesAgent::calcAgentRepulsionForceEvading(float dt);
+	Util::Vector calcRepulsionForceFleeing(float dt);
+	Util::Vector calcRepulsionForceEvading(float dt);
+	Util::Vector calcWallRepulsionForceFleeing(float dt);
+	Util::Vector calcAgentRepulsionForceEvading(float dt);
 
 	void calcNextStep(float dt);
 	Util::Vector calcRepulsionForce(float dt);
