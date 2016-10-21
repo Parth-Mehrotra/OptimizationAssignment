@@ -25,7 +25,7 @@
   </header>
   
   <suggestedCameraView>
-    <position> <x>0</x> <y>35</y> <z>-10</z> </position>
+    <position> <x>0</x> <y>50</y> <z>-10</z> </position>
     <lookat> <x>0</x> <y>0</y> <z>0</z> </lookat>
     <up> <x>0</x> <y>1</y> <z>0</z> </up>
     <fovy>45</fovy>
