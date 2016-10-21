@@ -33,13 +33,10 @@ class SocialForcesAgent : public SteerLib::AgentInterface
 {
 public:
 
-	
-
 	//figure out what type of agent it is if Pursuer/Evade
 	bool isPursuer;
 	bool isGuyToPursue;
 	bool isGuyToEvade;
-	static bool isFollowingLeader;
 
 	size_t pursuerId;
 	size_t guyToEvadeId;
@@ -111,17 +108,11 @@ private:
 	// bool hasLineOfSightTo(Util::Point point);
 
 	Util::Vector prefferedPursuerForce(float timeStamp, float dt, unsigned int frameNumber);
-
-	Util::Vector mazeSolver(float timeStamp, float dt, unsigned int frameNumber);
-	double point_bound_distance(Util::AxisAlignedBox, Util::Point);
-
 	Util::Vector prefferedFleeForce(float timeStamp, float dt, unsigned int frameNumber);
-	Util::Vector prefferedfollowLeaderForce(float timeStamp, float dt, unsigned int frameNumber);
-	Util::Vector calcRepulsionForceFleeing(float dt);
-	Util::Vector calcRepulsionForceEvading(float dt);
-	Util::Vector calcWallRepulsionForceFleeing(float dt);
-	Util::Vector calcAgentRepulsionForceEvading(float dt);
-
+	Util::Vector SocialForcesAgent::calcRepulsionForceFleeing(float dt);
+	Util::Vector SocialForcesAgent::calcRepulsionForceEvading(float dt);
+	Util::Vector SocialForcesAgent::calcWallRepulsionForceFleeing(float dt);
+	Util::Vector SocialForcesAgent::calcAgentRepulsionForceEvading(float dt);
 
 	void calcNextStep(float dt);
 	Util::Vector calcRepulsionForce(float dt);

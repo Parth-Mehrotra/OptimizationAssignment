@@ -24,6 +24,8 @@ using namespace Util;
 using namespace SocialForcesGlobals;
 using namespace SteerLib;
 
+bool SocialForcesAgent::isFollowingLeader = false;
+
 // #define _DEBUG_ENTROPY 1
 
 SocialForcesAgent::SocialForcesAgent()
@@ -161,42 +163,43 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			isPursuer = false;
 			isGuyToPursue = false;
 			isGuyToEvade = true;
-			std::cout << "We found GuyToEvade" << std::endl;
+			SocialForcesAgent::isFollowingLeader = false;
 			SteerLib::AgentGoalInfo _goal;
 			_goal.targetLocation = getSimulationEngine()->getSpatialDatabase()->randomPositionWithoutCollisions(1.0f, true);
 			_goalQueue.push(_goal);
 			_currentGoal.targetLocation = _goal.targetLocation;
-			std::cout << "GuyToEvade target location is: " << _goal.targetLocation << std::endl;
-			guyToEvadeId=this->_id;
-			std::cout << "GuyToEvade id: " << guyToEvadeId << std::endl;
 		}
 		//Pursuer
 		else if (initialConditions.goals[i].goalType == GOAL_TYPE_SEEK_DYNAMIC_TARGET&& initialConditions.name == "Pursuer") {
 			isPursuer = true;
 			isGuyToPursue = false;
 			isGuyToEvade = false;
-			std::cout << "We found Pursuer" << std::endl;
+			SocialForcesAgent::isFollowingLeader = false;
 			SteerLib::AgentGoalInfo _goal;
 			_goal.targetLocation = getSimulationEngine()->getSpatialDatabase()->randomPositionWithoutCollisions(1.0f, true);
 			_goalQueue.push(_goal);
 			_currentGoal.targetLocation = _goal.targetLocation;
-			std::cout << "Pursuer target location is: " << _goal.targetLocation << std::endl;
-			pursuerId = this->_id;
-			std::cout << "pursuer id: " << pursuerId << std::endl;
 		}
 		//GuyToPursue
 		else if (initialConditions.goals[i].goalType == GOAL_TYPE_FLEE_DYNAMIC_TARGET&& initialConditions.name == "GuyToPursue") {
 			isPursuer = false;
 			isGuyToPursue = true;
 			isGuyToEvade = false;
-			std::cout << "We found GuyToPursue" << std::endl;
+			SocialForcesAgent::isFollowingLeader = false;
 			SteerLib::AgentGoalInfo _goal;
 			_goal.targetLocation = getSimulationEngine()->getSpatialDatabase()->randomPositionWithoutCollisions(1.0f, true);
 			_goalQueue.push(_goal);
 			_currentGoal.targetLocation = _goal.targetLocation;
-			std::cout << "GuyToPursue target location is: " << _goal.targetLocation << std::endl;
-			guyToPursueId=this->_id;
-			std::cout << "guyToPursue id: " << guyToPursueId << std::endl;
+		}
+		else if (initialConditions.name == "Leader") {
+			SocialForcesAgent::isFollowingLeader = true;
+			isPursuer = false;
+			isGuyToPursue = false;
+			isGuyToEvade = false;
+			SteerLib::AgentGoalInfo _goal;
+			_goal.targetLocation = getSimulationEngine()->getSpatialDatabase()->randomPositionWithoutCollisions(1.0f, true);
+			_goalQueue.push(_goal);
+			_currentGoal.targetLocation = _goal.targetLocation;
 		}
 		//else for regular agents
 		else if (initialConditions.goals[i].goalType == SteerLib::GOAL_TYPE_SEEK_STATIC_TARGET ||
@@ -205,6 +208,7 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			isPursuer = false;
 			isGuyToPursue = false;
 			isGuyToEvade = false;
+			//SocialForcesAgent::isFollowingLeader = false;
 			if (initialConditions.goals[i].targetIsRandom)
 			{
 				// if the goal is random, we must randomly generate the goal.
@@ -537,37 +541,46 @@ Util::Vector SocialForcesAgent::calcAgentRepulsionForceEvading(float dt)
 			(tmp_agent->computePenetration(this->position(), this->radius()) > 0.000001)
 			)
 		{
-			agent_repulsion_force = agent_repulsion_force +
-				(tmp_agent->computePenetration(this->position(), this->radius()) * _SocialForcesParams.sf_agent_body_force * dt) *
-				normalize(position() - tmp_agent->position());
-			// normalized tangential force
-			/*
-			agent_repulsion_force = agent_repulsion_force +
-			(
-			(
-			(-1*position()) - tmp_agent->position()
-			)
-			/
-			(
-			(-1*position()) - tmp_agent->position()
-			).length()
-
-			)*0.2;
-			*/
-			//TODO this can have some funny behaviour is velocity == 0
-			Util::Vector tangent = cross(cross(tmp_agent->position() - position(), velocity()),
-				tmp_agent->position() - position());
-			tangent = tangent / tangent.length();
-			float  tanget_v_diff = dot(tmp_agent->velocity() - velocity(), tangent);
-			// std::cout << "Velocity diff is " << tanget_v_diff << " tangent is " << tangent <<
-			//	" velocity is " << velocity() << std::endl;
-			agent_repulsion_force = agent_repulsion_force +
-				(_SocialForcesParams.sf_sliding_friction_force * dt *
+			SocialForcesAgent * agent = (SocialForcesAgent *)tmp_agent;
+			
+			//if we find the guy to evade, we change the forces a bit
+			//if (agent->color().g == 0 && agent->color().r == 255 && agent->color().b == 0) {
+			//	
+			//}
+			//else {
+				agent_repulsion_force = agent_repulsion_force +
+					(tmp_agent->computePenetration(this->position(), this->radius()) * _SocialForcesParams.sf_agent_body_force * dt) *
+					normalize(position() - tmp_agent->position());
+				// normalized tangential force
+				/*
+				agent_repulsion_force = agent_repulsion_force +
 				(
-					tmp_agent->computePenetration(this->position(), this->radius())
-					) * tangent * tanget_v_diff
+				(
+				(-1*position()) - tmp_agent->position()
+				)
+				/
+				(
+				(-1*position()) - tmp_agent->position()
+				).length()
 
-					);
+				)*0.2;
+				*/
+				//TODO this can have some funny behaviour is velocity == 0
+				Util::Vector tangent = cross(cross(tmp_agent->position() - position(), velocity()),
+					tmp_agent->position() - position());
+				tangent = tangent / tangent.length();
+				float  tanget_v_diff = dot(tmp_agent->velocity() - velocity(), tangent);
+				// std::cout << "Velocity diff is " << tanget_v_diff << " tangent is " << tangent <<
+				//	" velocity is " << velocity() << std::endl;
+				agent_repulsion_force = agent_repulsion_force +
+					(_SocialForcesParams.sf_sliding_friction_force * dt *
+					(
+						tmp_agent->computePenetration(this->position(), this->radius())
+						) * tangent * tanget_v_diff
+
+
+						);
+			//}
 		}
 
 	}
@@ -1028,7 +1041,6 @@ void SocialForcesAgent::computeNeighbors()
 
 //preferred force for the pursuer
 Util::Vector SocialForcesAgent::prefferedPursuerForce(float timeStamp, float dt, unsigned int frameNumber) {
-	std::cout << "We are calculating the preferred Pursuer Force with id: " << this->_id << std::endl;
 	//find neighbor which trying to pursue
 	std::set<SteerLib::SpatialDatabaseItemPtr> _neighbors;
 
@@ -1043,12 +1055,16 @@ Util::Vector SocialForcesAgent::prefferedPursuerForce(float timeStamp, float dt,
 	//std::cout << "our name: " << getAgentConditions(this).name << std::endl;
 	//std::cout << "colorSet: " << getAgentConditions(this).colorSet << std::endl;
 	SteerLib::AgentInterface * agentToPursue;
+	bool haveFleer=false;
+	SteerLib::AgentInterface * agentToEvade;
+	bool haveBadGuy = false;
+
 
 	//make the nighbor the goal and compute goal direction that way
 	for (std::set<SteerLib::SpatialDatabaseItemPtr>::iterator neighbour = _neighbors.begin(); neighbour != _neighbors.end(); neighbour++)
 		// for (int a =0; a < tmp_agents.size(); a++)
 	{
-		std::cout << "We got the neighbor" << std::endl;
+		//std::cout << "We got the neighbor" << std::endl;
 
 		if ((*neighbour)->isAgent())
 		{
@@ -1060,20 +1076,58 @@ Util::Vector SocialForcesAgent::prefferedPursuerForce(float timeStamp, float dt,
 				//guy to evade
 			//}
 			//(agent)->getAgentConditions._color;
-			std::cout << "neighbor color: " << agent->color() << std::endl;
 			//check if pursuying this guy
 			if (agent->color().g == 255&& agent->color().r == 0&& agent->color().b == 0) {
 				//guy to pursue
-				std::cout << "We are calculating the preferred Pursuer Force and we found guy to pursue" << std::endl;
 				agentToPursue = agent;
+				haveFleer = true;
 			}
+			//check if evading this guy
+			else if (agent->color().g == 0 && agent->color().r == 255 && agent->color().b == 0) {
+				//guy to evade
+				agentToEvade = agent;
+				haveBadGuy = true;
+			}
+
 		}
 	}
-	Util::Vector goalDirection;
-	goalDirection = (*agentToPursue).position()-_position;
-	Util::Vector prefForce;
 
+	Util::Vector prefForce(0,0,0);
+	Util::Vector goalDirection(0, 0, 0);
 
+	if (haveFleer) {
+		float distance = (this->position() - ((SocialForcesAgent *)agentToPursue)->position()).length();
+		//std::cout << "ditance:" << distance << std::endl;
+		//within 20, pursuer really wants to get the guy so increase speed
+		float scale = 20 * exp((_radius + ((SocialForcesAgent *)agentToPursue)->radius() + 10 - distance) / 1);
+		if (scale > 0) {
+			scale = 1;
+		}
+		goalDirection = goalDirection + scale*Vector(((*agentToPursue).position() - _position).x,0, ((*agentToPursue).position() - _position).z);
+		goalDirection = 40*normalize(goalDirection);
+		//std::cout << "haveFleer goalDirection:"<< Vector(((*agentToPursue).position() - _position).x, 0, ((*agentToPursue).position() - _position).z) << std::endl;
+
+		while (!_goalQueue.empty()) {
+			_goalQueue.pop();
+		
+		}
+		SteerLib::AgentGoalInfo _goal;
+		_goal.targetLocation = ((SocialForcesAgent *)agentToPursue)->position();
+		_goalQueue.push(_goal);
+
+	}
+
+	if (haveBadGuy) {
+
+		float distance = (this->position() - ((SocialForcesAgent *)agentToEvade)->position()).length();
+		//std::cout << "ditance:" << distance << std::endl;
+		//within 20, he is scared and really wants to evade
+		float scale = 20 * exp((_radius + ((SocialForcesAgent *)agentToEvade)->radius()+20 - distance)/1);
+		//std::cout << "scale:" << scale << std::endl;
+		goalDirection = goalDirection - scale* Vector(((*agentToEvade).position() - _position).x, 0, ((*agentToEvade).position() - _position).z);
+		//std::cout << "haveBadGuy goalDirection:" << Vector(-((*agentToEvade).position() - _position).x, 0, -((*agentToEvade).position() - _position).z) << std::endl;
+	}
+	//std::cout << "goalDirection:" << goalDirection << std::endl;
 	prefForce = AGENT_MASS*(((goalDirection * PERFERED_SPEED) - velocity()) * dt); //assumption here
 	//prefForce = prefForce + velocity();
 	return prefForce;
@@ -1095,6 +1149,7 @@ Util::Vector SocialForcesAgent::prefferedFleeForce(float timeStamp, float dt, un
 	//std::cout << "our name: " << getAgentConditions(this).name << std::endl;
 	//std::cout << "colorSet: " << getAgentConditions(this).colorSet << std::endl;
 	SteerLib::AgentInterface * agentToFlee;
+	bool foundAgentToFlee = false;
 
 	//make the nighbor the goal and compute goal direction that way
 	for (std::set<SteerLib::SpatialDatabaseItemPtr>::iterator neighbour = _neighbors.begin(); neighbour != _neighbors.end(); neighbour++)
@@ -1111,17 +1166,20 @@ Util::Vector SocialForcesAgent::prefferedFleeForce(float timeStamp, float dt, un
 			//guy to evade
 			//}
 			//(agent)->getAgentConditions._color;
-			std::cout << "neighbor color: " << agent->color() << std::endl;
 			//check if pursuying this guy
 			if (agent->color().g == 100 && agent->color().r == 100 && agent->color().b == 200) {
 				//guy to pursue
-				std::cout << "We are calculating the preferred Pursuer Force and we found guy to pursue" << std::endl;
 				agentToFlee = agent;
+				foundAgentToFlee = true;
 			}
 		}
 	}
 	Util::Vector goalDirection;
-	goalDirection = -((*agentToFlee).position() - _position);
+	if (foundAgentToFlee) {
+		goalDirection = -((*agentToFlee).position() - _position);
+		//normalized goalDisrection
+		goalDirection = 35 * normalize(goalDirection);
+	}
 	Util::Vector prefForce;
 
 
@@ -1184,6 +1242,66 @@ Util::Vector SocialForcesAgent::mazeSolver(float timestamp, float dt, unsigned i
 	return cross(wn, Util::Vector(0, 1, 0));
 }
 
+//preffered force for follow the leaders guys
+Util::Vector SocialForcesAgent::prefferedfollowLeaderForce(float timeStamp, float dt, unsigned int frameNumber) {
+	//find neighbor which trying to pursue
+	std::set<SteerLib::SpatialDatabaseItemPtr> _neighbors;
+
+	getSimulationEngine()->getSpatialDatabase()->getItemsInRange(_neighbors,
+		_position.x - (this->_radius + 100),
+		_position.x + (this->_radius + 100),
+		_position.z - (this->_radius + 100),
+		_position.z + (this->_radius + 100),
+		dynamic_cast<SteerLib::SpatialDatabaseItemPtr>(this));
+
+	//std::cout << "We got the items around" << std::endl;
+	//std::cout << "our name: " << getAgentConditions(this).name << std::endl;
+	//std::cout << "colorSet: " << getAgentConditions(this).colorSet << std::endl;
+	SteerLib::AgentInterface * leader;
+	bool foundLeader = false;
+
+	//make the nighbor the goal and compute goal direction that way
+	for (std::set<SteerLib::SpatialDatabaseItemPtr>::iterator neighbour = _neighbors.begin(); neighbour != _neighbors.end(); neighbour++)
+		// for (int a =0; a < tmp_agents.size(); a++)
+	{
+
+		if ((*neighbour)->isAgent())
+		{
+
+			SocialForcesAgent * agent = (SocialForcesAgent *)dynamic_cast<SteerLib::AgentInterface *>(*neighbour);
+
+
+			//if ((*agent).id() == 1) {
+			//guy to evade
+			//}
+			//(agent)->getAgentConditions._color;
+			//check if pursuying this guy
+			if (agent->color().g == 255 && agent->color().r == 0 && agent->color().b == 255) {
+				//leader
+				leader = agent;
+				foundLeader = true;
+			}
+		}
+	}
+	Util::Vector goalDirection;
+	if (foundLeader) {
+		Util::Vector directionBehindLeader = -leader->velocity();
+		directionBehindLeader = normalize(directionBehindLeader);
+		directionBehindLeader = 3 * directionBehindLeader;
+		//std::cout << "directionBehindLeader: " << directionBehindLeader << std::endl;
+		Util::Point positionBehindLeader = (*leader).position()+ directionBehindLeader;
+		goalDirection = (positionBehindLeader - _position);
+		//normalized goalDisrection
+		goalDirection = 25 * normalize(goalDirection);
+	}
+	Util::Vector prefForce;
+
+	prefForce = AGENT_MASS*(((goalDirection * PERFERED_SPEED) - velocity()) * dt); //assumption here
+																				   //prefForce = prefForce + velocity();
+	return prefForce;
+}
+
+
 void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNumber)
 {
 	// std::cout << "_SocialForcesParams.rvo_max_speed " << _SocialForcesParams._SocialForcesParams.rvo_max_speed << std::endl;
@@ -1218,6 +1336,18 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 
 	//find the preferred force for the agent
 	Util::Vector prefForce;
+	if (SocialForcesAgent::isFollowingLeader) {
+		//std::cout << "we are following leader" << std::endl;
+		//this is the leader
+		if (_color.b == 255 && _color.g == 255 && _color.r == 0) {
+			prefForce = (((goalDirection * PERFERED_SPEED) - velocity()) / (_SocialForcesParams.sf_acceleration / dt)); //assumption here
+			prefForce = prefForce + velocity();
+		}
+		//for everyone else
+		else {
+			prefForce = prefferedfollowLeaderForce(timeStamp, dt, frameNumber);
+		}
+	}
 	//pursuer
 	if (_color.r == 255 && _color.g == 0 && _color.b == 255) {
 		prefForce = mazeSolver(timeStamp, dt, frameNumber);
@@ -1229,12 +1359,12 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 	}
 	//Guy to pursue
 	else if (_color.b == 0 && _color.g == 255 && _color.r == 0) {
-		std::cout << "This is a special type: guy to pursue" << color() << std::endl;
+		//std::cout << "This is a special type: guy to pursue-------------------------" << std::endl;
 		prefForce = prefferedFleeForce(timeStamp, dt, frameNumber);//(((goalDirection * PERFERED_SPEED) - velocity()) / (_SocialForcesParams.sf_acceleration / dt)); //assumption here
 		//prefForce = prefForce + velocity();
 	}
 	else {
-		std::cout << "These are bad guys: " << color() << std::endl;
+		//std::cout << "These are bad guys: -------------------------------------------" << std::endl;
 		prefForce = (((goalDirection * PERFERED_SPEED) - velocity()) / (_SocialForcesParams.sf_acceleration / dt)); //assumption here
 		prefForce = prefForce + velocity();
 		// _velocity = prefForce;
@@ -1313,7 +1443,7 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 							goalInfo.targetRegion.zmin, goalInfo.targetRegion.zmax, this->position(), this->radius())))
 	{
 		_goalQueue.pop();
-		// std::cout << "Made it to a goal" << std::endl;
+		 //std::cout << "Made it to a goal" << std::endl;
 		if (_goalQueue.size() != 0)
 		{
 			// in this case, there are still more goals, so start steering to the next goal.
