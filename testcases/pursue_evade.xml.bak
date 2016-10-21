@@ -97,7 +97,7 @@
         <targetName> GuyToPursue </targetName>
         <desiredSpeed>2</desiredSpeed>
         <timeDuration>1000.0</timeDuration>
-      </seekStaticTarget>
+      </seekDynamicTarget>
     </goalSequence>
   </agent>
 
@@ -115,7 +115,7 @@
         <targetName> Pursuer </targetName>
         <desiredSpeed>1.3</desiredSpeed>
         <timeDuration>1000.0</timeDuration>
-      </seekStaticTarget>
+      </fleeDynamicTarget>
     </goalSequence>
   </agent>
 

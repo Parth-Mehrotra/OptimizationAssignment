@@ -167,7 +167,8 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			_goalQueue.push(_goal);
 			_currentGoal.targetLocation = _goal.targetLocation;
 			std::cout << "GuyToEvade target location is: " << _goal.targetLocation << std::endl;
-			_id = 1;
+			guyToEvadeId=this->_id;
+			std::cout << "GuyToEvade id: " << guyToEvadeId << std::endl;
 		}
 		//Pursuer
 		else if (initialConditions.goals[i].goalType == GOAL_TYPE_SEEK_DYNAMIC_TARGET&& initialConditions.name == "Pursuer") {
@@ -180,7 +181,8 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			_goalQueue.push(_goal);
 			_currentGoal.targetLocation = _goal.targetLocation;
 			std::cout << "Pursuer target location is: " << _goal.targetLocation << std::endl;
-			_id = 2;
+			pursuerId = this->_id;
+			std::cout << "pursuer id: " << pursuerId << std::endl;
 		}
 		//GuyToPursue
 		else if (initialConditions.goals[i].goalType == GOAL_TYPE_FLEE_DYNAMIC_TARGET&& initialConditions.name == "GuyToPursue") {
@@ -193,7 +195,8 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			_goalQueue.push(_goal);
 			_currentGoal.targetLocation = _goal.targetLocation;
 			std::cout << "GuyToPursue target location is: " << _goal.targetLocation << std::endl;
-			_id = 3;
+			guyToPursueId=this->_id;
+			std::cout << "guyToPursue id: " << guyToPursueId << std::endl;
 		}
 		//else for regular agents
 		else if (initialConditions.goals[i].goalType == SteerLib::GOAL_TYPE_SEEK_STATIC_TARGET ||
@@ -481,6 +484,19 @@ Util::Vector SocialForcesAgent::calcProximityForce(float dt)
 	return away + away_obs;
 }
 
+
+//for evading/pursuing guy
+Util::Vector SocialForcesAgent::calcRepulsionForceEvading(float dt) {
+	return calcWallRepulsionForce(dt) + (_SocialForcesParams.sf_agent_repulsion_importance * calcAgentRepulsionForceEvading(dt));
+}
+
+//For fleeing Guy
+Util::Vector SocialForcesAgent::calcRepulsionForceFleeing(float dt) {
+
+	return calcWallRepulsionForce(dt) + (_SocialForcesParams.sf_agent_repulsion_importance * calcAgentRepulsionForce(dt));
+}
+
+
 Util::Vector SocialForcesAgent::calcRepulsionForce(float dt)
 {
 #ifdef _DEBUG_
@@ -489,6 +505,75 @@ Util::Vector SocialForcesAgent::calcRepulsionForce(float dt)
 #endif
 	return calcWallRepulsionForce(dt) + (_SocialForcesParams.sf_agent_repulsion_importance * calcAgentRepulsionForce(dt));
 }
+
+
+Util::Vector SocialForcesAgent::calcAgentRepulsionForceEvading(float dt)
+{
+
+	Util::Vector agent_repulsion_force = Util::Vector(0, 0, 0);
+
+	std::set<SteerLib::SpatialDatabaseItemPtr> _neighbors;
+	getSimulationEngine()->getSpatialDatabase()->getItemsInRange(_neighbors,
+		_position.x - (this->_radius + _SocialForcesParams.sf_query_radius),
+		_position.x + (this->_radius + _SocialForcesParams.sf_query_radius),
+		_position.z - (this->_radius + _SocialForcesParams.sf_query_radius),
+		_position.z + (this->_radius + _SocialForcesParams.sf_query_radius),
+		(this));
+
+	SteerLib::AgentInterface * tmp_agent;
+
+	for (std::set<SteerLib::SpatialDatabaseItemPtr>::iterator neighbour = _neighbors.begin(); neighbour != _neighbors.end(); neighbour++)
+		// for (int a =0; a < tmp_agents.size(); a++)
+	{
+		if ((*neighbour)->isAgent())
+		{
+			tmp_agent = dynamic_cast<SteerLib::AgentInterface *>(*neighbour);
+		}
+		else
+		{
+			continue;
+		}
+		if ((id() != tmp_agent->id()) &&
+			(tmp_agent->computePenetration(this->position(), this->radius()) > 0.000001)
+			)
+		{
+			agent_repulsion_force = agent_repulsion_force +
+				(tmp_agent->computePenetration(this->position(), this->radius()) * _SocialForcesParams.sf_agent_body_force * dt) *
+				normalize(position() - tmp_agent->position());
+			// normalized tangential force
+			/*
+			agent_repulsion_force = agent_repulsion_force +
+			(
+			(
+			(-1*position()) - tmp_agent->position()
+			)
+			/
+			(
+			(-1*position()) - tmp_agent->position()
+			).length()
+
+			)*0.2;
+			*/
+			//TODO this can have some funny behaviour is velocity == 0
+			Util::Vector tangent = cross(cross(tmp_agent->position() - position(), velocity()),
+				tmp_agent->position() - position());
+			tangent = tangent / tangent.length();
+			float  tanget_v_diff = dot(tmp_agent->velocity() - velocity(), tangent);
+			// std::cout << "Velocity diff is " << tanget_v_diff << " tangent is " << tangent <<
+			//	" velocity is " << velocity() << std::endl;
+			agent_repulsion_force = agent_repulsion_force +
+				(_SocialForcesParams.sf_sliding_friction_force * dt *
+				(
+					tmp_agent->computePenetration(this->position(), this->radius())
+					) * tangent * tanget_v_diff
+
+					);
+		}
+
+	}
+	return agent_repulsion_force;
+}
+
 
 Util::Vector SocialForcesAgent::calcAgentRepulsionForce(float dt)
 {
@@ -555,6 +640,122 @@ Util::Vector SocialForcesAgent::calcAgentRepulsionForce(float dt)
 
 	}
 	return agent_repulsion_force;
+}
+
+//For fleeing Guy, wall repulsion
+Util::Vector SocialForcesAgent::calcWallRepulsionForceFleeing(float dt) {
+
+	Util::Vector wall_repulsion_force = Util::Vector(0, 0, 0);
+
+
+	std::set<SteerLib::SpatialDatabaseItemPtr> _neighbors;
+	getSimulationEngine()->getSpatialDatabase()->getItemsInRange(_neighbors,
+		_position.x - (this->_radius + _SocialForcesParams.sf_query_radius),
+		_position.x + (this->_radius + _SocialForcesParams.sf_query_radius),
+		_position.z - (this->_radius + _SocialForcesParams.sf_query_radius),
+		_position.z + (this->_radius + _SocialForcesParams.sf_query_radius),
+		dynamic_cast<SteerLib::SpatialDatabaseItemPtr>(this));
+
+	SteerLib::ObstacleInterface * tmp_ob;
+
+	for (std::set<SteerLib::SpatialDatabaseItemPtr>::iterator neighbour = _neighbors.begin(); neighbour != _neighbors.end(); neighbour++)
+		// for (std::set<SteerLib::ObstacleInterface * >::iterator tmp_o = _neighbors.begin();  tmp_o != _neighbors.end();  tmp_o++)
+	{
+		if (!(*neighbour)->isAgent())
+		{
+			tmp_ob = dynamic_cast<SteerLib::ObstacleInterface *>(*neighbour);
+		}
+		else
+		{
+			continue;
+		}
+		if (tmp_ob->computePenetration(this->position(), this->radius()) > 0.000001)
+		{
+			CircleObstacle * cir_obs = dynamic_cast<SteerLib::CircleObstacle *>(tmp_ob);
+			if (cir_obs != NULL && USE_CIRCLES)
+			{
+				// std::cout << "Intersected circle obstacle" << std::endl;
+				Util::Vector wall_normal = position() - cir_obs->position();
+				// wall distance
+				float distance = wall_normal.length() - cir_obs->radius();
+
+				wall_normal = normalize(wall_normal);
+				wall_repulsion_force = wall_repulsion_force +
+					((
+					(
+						(
+							wall_normal
+							)
+						*
+						(
+							radius() +
+							_SocialForcesParams.sf_personal_space_threshold -
+							(
+								distance
+								)
+							)
+						)
+						/
+						distance
+						)* _SocialForcesParams.sf_body_force * dt);
+
+				// tangential force
+				// std::cout << "wall tangent " << rightSideInXZPlane(wall_normal) <<
+				// 	" dot is " << dot(forward(),  rightSideInXZPlane(wall_normal)) <<
+				// std::endl;
+				wall_repulsion_force = wall_repulsion_force +
+					(
+						dot(forward(), rightSideInXZPlane(wall_normal))
+						*
+						rightSideInXZPlane(wall_normal)
+						*
+						cir_obs->computePenetration(this->position(), this->radius())
+						)* _SocialForcesParams.sf_sliding_friction_force * dt;
+
+			}
+			else
+			{
+				Util::Vector wall_normal = calcWallNormal(tmp_ob);
+				std::pair<Util::Point, Util::Point> line = calcWallPointsFromNormal(tmp_ob, wall_normal);
+				// Util::Point midpoint = Util::Point((line.first.x+line.second.x)/2, ((line.first.y+line.second.y)/2)+1,
+				// 	(line.first.z+line.second.z)/2);
+				std::pair<float, Util::Point> min_stuff = minimum_distance(line.first, line.second, position());
+				// wall distance
+				wall_repulsion_force = wall_repulsion_force +
+					((
+					(
+						(
+							wall_normal
+							)
+						*
+						(
+							radius() +
+							_SocialForcesParams.sf_personal_space_threshold -
+							(
+								min_stuff.first
+								)
+							)
+						)
+						/
+						min_stuff.first
+						)* _SocialForcesParams.sf_body_force * dt);
+				// tangential force
+				// std::cout << "wall tangent " << rightSideInXZPlane(wall_normal) <<
+				// 	" dot is " << dot(forward(),  rightSideInXZPlane(wall_normal)) <<
+				// std::endl;
+				wall_repulsion_force = wall_repulsion_force +
+					(
+						dot(forward(), rightSideInXZPlane(wall_normal))
+						*
+						rightSideInXZPlane(wall_normal)
+						*
+						tmp_ob->computePenetration(this->position(), this->radius())
+						)* _SocialForcesParams.sf_sliding_friction_force * dt;
+			}
+		}
+
+	}
+	return wall_repulsion_force;
 }
 
 Util::Vector SocialForcesAgent::calcWallRepulsionForce(float dt)
@@ -825,11 +1026,114 @@ void SocialForcesAgent::computeNeighbors()
 	}
 }*/
 
+//preferred force for the pursuer
+Util::Vector SocialForcesAgent::prefferedPursuerForce(float timeStamp, float dt, unsigned int frameNumber) {
+	std::cout << "We are calculating the preferred Pursuer Force with id: " << this->_id << std::endl;
+	//find neighbor which trying to pursue
+	std::set<SteerLib::SpatialDatabaseItemPtr> _neighbors;
+
+	getSimulationEngine()->getSpatialDatabase()->getItemsInRange(_neighbors,
+		_position.x - (this->_radius + 100),
+		_position.x + (this->_radius + 100),
+		_position.z - (this->_radius + 100),
+		_position.z + (this->_radius + 100),
+		dynamic_cast<SteerLib::SpatialDatabaseItemPtr>(this));
+
+	//std::cout << "We got the items around" << std::endl;
+	//std::cout << "our name: " << getAgentConditions(this).name << std::endl;
+	//std::cout << "colorSet: " << getAgentConditions(this).colorSet << std::endl;
+	SteerLib::AgentInterface * agentToPursue;
+
+	//make the nighbor the goal and compute goal direction that way
+	for (std::set<SteerLib::SpatialDatabaseItemPtr>::iterator neighbour = _neighbors.begin(); neighbour != _neighbors.end(); neighbour++)
+		// for (int a =0; a < tmp_agents.size(); a++)
+	{
+		std::cout << "We got the neighbor" << std::endl;
+
+		if ((*neighbour)->isAgent())
+		{
+			
+			SocialForcesAgent * agent = (SocialForcesAgent *)dynamic_cast<SteerLib::AgentInterface *>(*neighbour);
+			
+			
+			//if ((*agent).id() == 1) {
+				//guy to evade
+			//}
+			//(agent)->getAgentConditions._color;
+			std::cout << "neighbor color: " << agent->color() << std::endl;
+			//check if pursuying this guy
+			if (agent->color().g == 255&& agent->color().r == 0&& agent->color().b == 0) {
+				//guy to pursue
+				std::cout << "We are calculating the preferred Pursuer Force and we found guy to pursue" << std::endl;
+				agentToPursue = agent;
+			}
+		}
+	}
+	Util::Vector goalDirection;
+	goalDirection = (*agentToPursue).position()-_position;
+	Util::Vector prefForce;
+
+
+	prefForce = AGENT_MASS*(((goalDirection * PERFERED_SPEED) - velocity()) * dt); //assumption here
+	//prefForce = prefForce + velocity();
+	return prefForce;
+}
+
+//preffered force for the pursued(fleeing)
+Util::Vector SocialForcesAgent::prefferedFleeForce(float timeStamp, float dt, unsigned int frameNumber) {
+	//find neighbor which trying to pursue
+	std::set<SteerLib::SpatialDatabaseItemPtr> _neighbors;
+
+	getSimulationEngine()->getSpatialDatabase()->getItemsInRange(_neighbors,
+		_position.x - (this->_radius + 100),
+		_position.x + (this->_radius + 100),
+		_position.z - (this->_radius + 100),
+		_position.z + (this->_radius + 100),
+		dynamic_cast<SteerLib::SpatialDatabaseItemPtr>(this));
+
+	//std::cout << "We got the items around" << std::endl;
+	//std::cout << "our name: " << getAgentConditions(this).name << std::endl;
+	//std::cout << "colorSet: " << getAgentConditions(this).colorSet << std::endl;
+	SteerLib::AgentInterface * agentToFlee;
+
+	//make the nighbor the goal and compute goal direction that way
+	for (std::set<SteerLib::SpatialDatabaseItemPtr>::iterator neighbour = _neighbors.begin(); neighbour != _neighbors.end(); neighbour++)
+		// for (int a =0; a < tmp_agents.size(); a++)
+	{
+
+		if ((*neighbour)->isAgent())
+		{
+
+			SocialForcesAgent * agent = (SocialForcesAgent *)dynamic_cast<SteerLib::AgentInterface *>(*neighbour);
+
+
+			//if ((*agent).id() == 1) {
+			//guy to evade
+			//}
+			//(agent)->getAgentConditions._color;
+			std::cout << "neighbor color: " << agent->color() << std::endl;
+			//check if pursuying this guy
+			if (agent->color().g == 100 && agent->color().r == 100 && agent->color().b == 200) {
+				//guy to pursue
+				std::cout << "We are calculating the preferred Pursuer Force and we found guy to pursue" << std::endl;
+				agentToFlee = agent;
+			}
+		}
+	}
+	Util::Vector goalDirection;
+	goalDirection = -((*agentToFlee).position() - _position);
+	Util::Vector prefForce;
+
+
+	prefForce = AGENT_MASS*(((goalDirection * PERFERED_SPEED) - velocity()) * dt); //assumption here
+																				   //prefForce = prefForce + velocity();
+	return prefForce;
+}
 
 void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNumber)
 {
 	// std::cout << "_SocialForcesParams.rvo_max_speed " << _SocialForcesParams._SocialForcesParams.rvo_max_speed << std::endl;
-	Util::AutomaticFunctionProfiler profileThisFunction( &SocialForcesGlobals::gPhaseProfilers->aiProfiler );
+	Util::AutomaticFunctionProfiler profileThisFunction(&SocialForcesGlobals::gPhaseProfilers->aiProfiler);
 	if (!enabled())
 	{
 		return;
@@ -840,7 +1144,7 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 	SteerLib::AgentGoalInfo goalInfo = _goalQueue.front();
 	Util::Vector goalDirection;
 	// std::cout << "midtermpath empty: " << _midTermPath.empty() << std::endl;
-	if ( ! _midTermPath.empty() && (!this->hasLineOfSightTo(goalInfo.targetLocation)) )
+	if (!_midTermPath.empty() && (!this->hasLineOfSightTo(goalInfo.targetLocation)))
 	{
 		if (reachedCurrentWaypoint())
 		{
@@ -861,26 +1165,48 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 	//find the preferred force for the agent
 	Util::Vector prefForce;
 	//pursuer
-	if (_id == 2) {
-		std::cout << "This is a special type: pursuer" << std::endl;
-		//Util::Vector prefForce=pursuerForce();
+	if (_color.b == 200 && _color.g == 100 && _color.r == 100) {
+		std::cout << "This is a special type: pursuer with color: " << color() << std::endl;
+		prefForce = prefferedPursuerForce(timeStamp, dt, frameNumber);
+		//prefForce = (((goalDirection * PERFERED_SPEED) - velocity()) / (_SocialForcesParams.sf_acceleration / dt)); //assumption here
+		//prefForce = prefForce + velocity();
 	}
 	//Guy to pursue
-	else if (_id == 3) {
-		std::cout << "This is a special type: guy to pursue" << std::endl;
-	}else {
+	else if (_color.b == 0 && _color.g == 255 && _color.r == 0) {
+		std::cout << "This is a special type: guy to pursue" << color() << std::endl;
+		prefForce = prefferedFleeForce(timeStamp, dt, frameNumber);//(((goalDirection * PERFERED_SPEED) - velocity()) / (_SocialForcesParams.sf_acceleration / dt)); //assumption here
+		//prefForce = prefForce + velocity();
+	}
+	else {
+		std::cout << "These are bad guys: " << color() << std::endl;
 		prefForce = (((goalDirection * PERFERED_SPEED) - velocity()) / (_SocialForcesParams.sf_acceleration / dt)); //assumption here
 		prefForce = prefForce + velocity();
 		// _velocity = prefForce;
 	}
-	Util::Vector repulsionForce = calcRepulsionForce(dt);
+	Util::Vector repulsionForce;
+	//Fleeing guy has different repulsion force because he is really scared of walls
+	//pursuer
+	if (_color.b == 200 && _color.g == 100 && _color.r == 100) {
+		repulsionForce = calcRepulsionForceEvading(dt);
+	}
+
+	if (_color.b == 0 && _color.g == 255 && _color.r == 0) {
+		repulsionForce = calcRepulsionForceFleeing(dt);
+	}
+	else {
+		repulsionForce = calcRepulsionForce(dt);
+	}
 	if ( repulsionForce.x != repulsionForce.x)
 	{
 		std::cout << "Found some nan" << std::endl;
 		repulsionForce = velocity();
 		// throw GenericException("SocialForces numerical issue");
 	}
-	Util::Vector proximityForce = calcProximityForce(dt);
+	Util::Vector proximityForce;
+	//Fleeing guy has different repulsion force because he is really scared of walls
+	if (_color.b == 0 && _color.g == 255 && _color.r == 0) {
+		 proximityForce = 5*calcProximityForce(dt);
+	}
 // #define _DEBUG_ 1
 #ifdef _DEBUG_
 	std::cout << "agent" << id() << " repulsion force " << repulsionForce << std::endl;

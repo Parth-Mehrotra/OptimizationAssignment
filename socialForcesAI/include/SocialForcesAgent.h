@@ -38,6 +38,10 @@ public:
 	bool isGuyToPursue;
 	bool isGuyToEvade;
 
+	size_t pursuerId;
+	size_t guyToEvadeId;
+	size_t guyToPursueId;
+
 	SocialForcesAgent();
 	~SocialForcesAgent();
 	void reset(const SteerLib::AgentInitialConditions & initialConditions, SteerLib::EngineInterface * engineInfo);
@@ -45,6 +49,7 @@ public:
 	void disable();
 	void draw();
 
+	Util::Color color() const { return _color; }
 	bool enabled() const { return _enabled; }
 	Util::Point position() const { return _position; }
 	Util::Vector forward() const { return _forward; }
@@ -102,6 +107,12 @@ private:
 	// void updateMidTermPath();
 	// bool hasLineOfSightTo(Util::Point point);
 
+	Util::Vector prefferedPursuerForce(float timeStamp, float dt, unsigned int frameNumber);
+	Util::Vector prefferedFleeForce(float timeStamp, float dt, unsigned int frameNumber);
+	Util::Vector SocialForcesAgent::calcRepulsionForceFleeing(float dt);
+	Util::Vector SocialForcesAgent::calcRepulsionForceEvading(float dt);
+	Util::Vector SocialForcesAgent::calcWallRepulsionForceFleeing(float dt);
+	Util::Vector SocialForcesAgent::calcAgentRepulsionForceEvading(float dt);
 
 	void calcNextStep(float dt);
 	Util::Vector calcRepulsionForce(float dt);
