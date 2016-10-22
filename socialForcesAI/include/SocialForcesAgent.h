@@ -120,7 +120,7 @@ private:
 	Util::Vector prefferedfollowLeaderForce(float timeStamp, float dt, unsigned int frameNumber);
 
 	Util::Vector calcProximityForceFollowLeader(float dt);
-	Util::Vector prefferedfollowLeaderForce(float timeStamp, float dt, unsigned int frameNumber);
+	//Util::Vector prefferedfollowLeaderForce(float timeStamp, float dt, unsigned int frameNumber);
 	Util::Vector calcRepulsionForceFleeing(float dt);
 	Util::Vector calcRepulsionForceEvading(float dt);
 	Util::Vector calcWallRepulsionForceFleeing(float dt);
