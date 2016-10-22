@@ -1141,6 +1141,60 @@ Util::Vector SocialForcesAgent::prefferedFleeForce(float timeStamp, float dt, un
 	return prefForce;
 }
 
+double SocialForcesAgent::point_bound_distance(Util::AxisAlignedBox box, Util::Point p) {
+	if (box.xmin < p.x && box.xmax > p.x) {
+		return std::min(std::abs(p.z - box.zmin), std::abs(p.z - box.zmax));
+	} else if (box.zmin < p.z && box.zmax > p.z) {
+		return std::min(std::abs(p.x - box.xmin), std::abs(p.x - box.xmax));
+	} else {
+		return std::min(
+				std::min(
+					std::sqrt(((p.x-box.xmin)*(p.x-box.xmin) + (p.z-box.zmin)*(p.z-box.zmin))),
+					std::sqrt(((p.x-box.xmin)*(p.x-box.xmin) + (p.z-box.zmax)*(p.z-box.zmax)))
+				), 
+				std::min(
+					std::sqrt(((p.x-box.xmax)*(p.x-box.xmax) + (p.z-box.zmax)*(p.z-box.zmin))),
+					std::sqrt(((p.x-box.xmax)*(p.x-box.xmax) + (p.z-box.zmin)*(p.z-box.zmin)))
+				)
+			);
+	}
+}
+
+Util::Vector SocialForcesAgent::mazeSolver(float timestamp, float dt, unsigned int framenumber) {
+	std::cout << "maze" << std::endl;
+	std::set<SteerLib::SpatialDatabaseItemPtr> things_in_vision;
+
+	getSimulationEngine()->getSpatialDatabase()->getItemsInRange(things_in_vision,
+		_position.x - (this->_radius + 1),
+		_position.x + (this->_radius + 1),
+		_position.z - (this->_radius + 1),
+		_position.z + (this->_radius + 1),
+		dynamic_cast<SteerLib::SpatialDatabaseItemPtr>(this));
+
+	SteerLib::ObstacleInterface *closest_obstacle;
+	double distance = 10000000; 
+	std::cout << "Found " << things_in_vision.size() << " things" << std::endl;
+	std::cout << "Position " << this -> position() << std::endl;
+	for (std::set<SteerLib::SpatialDatabaseItemPtr>::iterator neighbour = things_in_vision.begin(); neighbour != things_in_vision.end(); neighbour++) {
+		
+		if (!((*neighbour) -> isAgent())) {
+			SteerLib::ObstacleInterface *maze_obstacle = (ObstacleInterface* )(*neighbour);
+			double d = SocialForcesAgent::point_bound_distance(maze_obstacle -> getBounds(), this->position());
+			if (d < distance) {
+				std::cout << "Found new min with distance: " << d << " " << maze_obstacle -> getBounds() << std::endl;
+				closest_obstacle = maze_obstacle;
+				distance = d;
+			}
+		}
+
+	}
+	std::cout << "Closest wall: " << closest_obstacle->getBounds() << std::endl;
+	std::cout << "Distance: " << distance << std::endl;
+	Util::Vector wn = calcWallNormal(closest_obstacle);
+	std::cout << "wn: " << wn << std::endl;
+	return cross(wn, Util::Vector(0, 1, 0));
+}
+
 //preffered force for follow the leaders guys
 Util::Vector SocialForcesAgent::prefferedfollowLeaderForce(float timeStamp, float dt, unsigned int frameNumber) {
 	//find neighbor which trying to pursue
@@ -1248,8 +1302,10 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 		}
 	}
 	//pursuer
-	else if (_color.b == 200 && _color.g == 100 && _color.r == 100) {
-		//std::cout << "This is a special type: pursuer with color: -------------------" << std::endl;
+	if (_color.r == 255 && _color.g == 0 && _color.b == 255) {
+		prefForce = mazeSolver(timeStamp, dt, frameNumber);
+	} else if (_color.b == 200 && _color.g == 100 && _color.r == 100) {
+		std::cout << "This is a special type: pursuer with color: " << color() << std::endl;
 		prefForce = prefferedPursuerForce(timeStamp, dt, frameNumber);
 		//prefForce = (((goalDirection * PERFERED_SPEED) - velocity()) / (_SocialForcesParams.sf_acceleration / dt)); //assumption here
 		//prefForce = prefForce + velocity();
@@ -1456,7 +1512,7 @@ void SocialForcesAgent::draw()
 
 	/*
 	// draw normals and closest points on walls
-	std::set<SteerLib::ObstacleInterface * > tmp_obs = gEngine->getObstacles();
+	std::set<SteerLib::bstacleInterface * > tmp_obs = gEngine->getObstacles();
 
 	for (std::set<SteerLib::ObstacleInterface * >::iterator tmp_o = tmp_obs.begin();  tmp_o != tmp_obs.end();  tmp_o++)
 	{
