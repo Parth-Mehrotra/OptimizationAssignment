@@ -84,7 +84,7 @@
   </obstacle>
 
   <agentRegion>
-    <numAgents>20</numAgents>
+    <numAgents>10</numAgents>
     <regionBounds>
       <xmin>23</xmin>
       <xmax>90</xmax>
@@ -113,7 +113,7 @@
   </agentRegion>
 
   <agentRegion>
-    <numAgents>20</numAgents>
+    <numAgents>10</numAgents>
     <regionBounds>
       <xmin>23</xmin>
       <xmax>90</xmax>
@@ -138,7 +138,7 @@
   </agentRegion>
 
   <agentRegion>
-    <numAgents>20</numAgents>
+    <numAgents>10</numAgents>
     <regionBounds>
       <xmin>23</xmin>
       <xmax>90</xmax>
@@ -163,7 +163,7 @@
   </agentRegion>
 
   <agentRegion>
-    <numAgents>20</numAgents>
+    <numAgents>10</numAgents>
     <regionBounds>
       <xmin>23</xmin>
       <xmax>90</xmax>
@@ -188,7 +188,7 @@
   </agentRegion>
 
   <agentRegion>
-    <numAgents>20</numAgents>
+    <numAgents>10</numAgents>
     <regionBounds>
       <xmin>23</xmin>
       <xmax>90</xmax>
@@ -213,7 +213,7 @@
   </agentRegion>
 
   <agentRegion>
-    <numAgents>20</numAgents>
+    <numAgents>10</numAgents>
     <regionBounds>
       <xmin>23</xmin>
       <xmax>90</xmax>
@@ -238,7 +238,7 @@
   </agentRegion>
 
   <agentRegion>
-    <numAgents>20</numAgents>
+    <numAgents>10</numAgents>
     <regionBounds>
       <xmin>23</xmin>
       <xmax>90</xmax>
@@ -263,7 +263,7 @@
   </agentRegion>
 
   <agentRegion>
-    <numAgents>20</numAgents>
+    <numAgents>10</numAgents>
     <regionBounds>
       <xmin>23</xmin>
       <xmax>90</xmax>
@@ -288,7 +288,7 @@
   </agentRegion>
 
   <agentRegion>
-    <numAgents>20</numAgents>
+    <numAgents>10</numAgents>
     <regionBounds>
       <xmin>23</xmin>
       <xmax>90</xmax>
@@ -313,7 +313,7 @@
   </agentRegion>
 
   <agentRegion>
-    <numAgents>20</numAgents>
+    <numAgents>10</numAgents>
     <regionBounds>
       <xmin>23</xmin>
       <xmax>90</xmax>
@@ -341,7 +341,7 @@
     <name>Leader</name>
     <initialConditions>
       <radius>0.5</radius>
-      <position> <x>0</x> <y>0</y> <z>50</z> </position>
+      <position> <x>50</x> <y>0</y> <z>0</z> </position>
       <direction> <x>-1</x> <y>0</y> <z>0</z> </direction>
       <speed>0</speed>
 	  <color><r>0</r><g>255</g><b>255</b></color>
