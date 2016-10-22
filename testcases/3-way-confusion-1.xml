@@ -179,7 +179,7 @@
     <name>A</name>
     <initialConditions>
       <radius>0.1</radius>
-      <position> <x>3.75</x> <y>0</y> <z>-4.5</z> </position>
+      <position> <x>3.85</x> <y>0</y> <z>-4.5</z> </position>
       <direction> <x>-1</x> <y>0</y> <z>0</z> </direction>
       <speed>0</speed>
       <color>
