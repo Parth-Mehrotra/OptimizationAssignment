@@ -111,15 +111,24 @@ private:
 	// bool hasLineOfSightTo(Util::Point point);
 
 	Util::Vector prefferedPursuerForce(float timeStamp, float dt, unsigned int frameNumber);
+
+	Util::Vector mazeSolver(float timeStamp, float dt, unsigned int frameNumber);
+	double point_bound_distance(Util::AxisAlignedBox, Util::Point);
+
 	Util::Vector prefferedFleeForce(float timeStamp, float dt, unsigned int frameNumber);
 <<<<<<< HEAD
+
 	Util::Vector prefferedfollowLeaderForce(float timeStamp, float dt, unsigned int frameNumber);
+
+	Util::Vector calcProximityForceFollowLeader(float dt);
 =======
->>>>>>> 8b1ba190d5cec5e87d7a6795db6e1602ddfd4fe6
+	Util::Vector prefferedfollowLeaderForce(float timeStamp, float dt, unsigned int frameNumber);
 	Util::Vector calcRepulsionForceFleeing(float dt);
 	Util::Vector calcRepulsionForceEvading(float dt);
 	Util::Vector calcWallRepulsionForceFleeing(float dt);
 	Util::Vector calcAgentRepulsionForceEvading(float dt);
+>>>>>>> ba4f09173861c8b7d429a611c2bfadc686a5cdfe
+
 
 	void calcNextStep(float dt);
 	Util::Vector calcRepulsionForce(float dt);
