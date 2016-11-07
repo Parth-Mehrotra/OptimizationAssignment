@@ -30,6 +30,7 @@ namespace SteerLib
 
 	bool AStarPlanner::canBeTraversed ( int id ) 
 	{
+		std::cout << "\nIn canBeTraversed"<< std::endl;
 		double traversal_cost = 0;
 		int current_id = id;
 		unsigned int x,z;
@@ -73,8 +74,50 @@ namespace SteerLib
 	{
 		gSpatialDatabase = _gSpatialDatabase;
 
+		for(int i=0; i<agent_path.size; i++){
+			std::cout << agent_path[i] << std::endl;
+		}
+
+		//1.closedset := empty set
+		std::vector<AStarPlannerNode> closedSet;
+		//2.openset={start} where start(g=0)
+		std::vector<AStarPlannerNode> openSet;
+		openSet.push_back(AStarPlannerNode(start,0,0,NULL));
+
+		//make map
+		std::vector<std::vector<AStarPlannerNode>> map;
+
+		//value of top-left x
+		float topleftx = _gSpatialDatabase->getOriginX();
+		float topleftz = _gSpatialDatabase->getOriginZ();
+		float bottomrightx = topleftx + _gSpatialDatabase->getGridSizeX();
+		float bottomrightz = topleftz + _gSpatialDatabase->getGridSizeZ();
+
+		std::cout <<"topleftx"<< topleftx << std::endl;
+		std::cout << "topleftz" << topleftz << std::endl;
+		std::cout << "bottomrightx" << bottomrightx << std::endl;
+		std::cout << "bottomrightz" << bottomrightz << std::endl;
+		
+		//set g's and f's of map
+		for (int x = topleftx; x < bottomrightx; x++) {
+			for (int z = topleftz; z < bottomrightz; z++) {
+				//4.g_score=map with default value of infinity
+				(map[x])[z].g = INFINITY;
+				(map[x])[z].f = INFINITY;
+			}
+		}
+		//(map[start.x])[start.y].g = 0;
+
+
+		std::vector<Util::Point> tempPath;
+		tempPath.push_back(Point(6, 0, -1));
+		tempPath.push_back(Point(6, 0, 10));
+		tempPath.push_back(Point(-10, 0, 10));
+		tempPath.push_back(Point(-10, 0, -1));
+		agent_path = tempPath;
+
 		//TODO
-		std::cout<<"\nIn A*";
+		std::cout<<"\nIn A*"<<std::endl;
 
 		return false;
 	}
