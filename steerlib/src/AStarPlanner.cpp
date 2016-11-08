@@ -78,22 +78,22 @@ namespace SteerLib
 			);
 	}
 
-	int AStarPlanner::indexWithLeastF(std::vector<AStarPlannerNode> list) { 
+	int AStarPlanner::indexWithLeastF(std::vector<AStarPlannerNode*> list) { 
 		double min = std::numeric_limits<double>::max();
 		int index = -1;
 		for (int i = 0; i < list.size(); i++) {
-			if (list[i].f <= min) {
-				min = list[i].f;
+			if (list[i] -> f <= min) {
+				min = list[i] -> f;
 				index = i;
 			}
 		}
 		return index;
 	}
 
-	bool AStarPlanner::addNeighborIfGood(AStarPlannerNode* parent, std::vector<AStarPlannerNode> &neighbors, Util::Point point) {
+	bool AStarPlanner::addNeighborIfGood(AStarPlannerNode* parent, std::vector<AStarPlannerNode*> &neighbors, Util::Point point) {
 		std::cout << "Point that i'm checking: " << point << std::endl;
 		if (!gSpatialDatabase -> hasAnyItems(gSpatialDatabase -> getCellIndexFromLocation(point))) {
-			AStarPlannerNode node(point, double(0), double(0), double(0), parent);
+			AStarPlannerNode* node = new AStarPlannerNode(point, double(0), double(0), double(0), parent);
 			neighbors.push_back(node);
 			return true;
 		} else {
@@ -103,8 +103,8 @@ namespace SteerLib
 		return false;
 	}
 
-	std::vector<AStarPlannerNode> AStarPlanner::getNeighbors(AStarPlannerNode* a) { 
-		std::vector<AStarPlannerNode> neighbors;
+	std::vector<AStarPlannerNode*> AStarPlanner::getNeighbors(AStarPlannerNode* a) { 
+		std::vector<AStarPlannerNode*> neighbors;
 		// Top 
 		addNeighborIfGood(a, neighbors, Util::Point(a -> point.x, 0,  a -> point.z+1));
 		
@@ -146,12 +146,13 @@ namespace SteerLib
 			temp = temp -> parent;
 			trace.push_back(temp -> point);
 		}
+		std::cout << "Terminated" << std::endl;
 		return trace;
 	}
 
-	void AStarPlanner::printList(std::vector<AStarPlannerNode> list) {
+	void AStarPlanner::printList(std::vector<AStarPlannerNode*> list) {
 		for (int i = 0; i < list.size(); i++) {
-			std::cout << list[i] << std::endl;
+			std::cout << *list[i] << std::endl;
 		}
 	}
 
@@ -159,21 +160,22 @@ namespace SteerLib
 		gSpatialDatabase = _gSpatialDatabase;
 		// Psuedocode from: http://web.mit.edu/eranki/www/tutorials/search/
 		// Initialize the open list
-		std::vector<AStarPlannerNode> open_list;
+		std::vector<AStarPlannerNode*> open_list;
 
 		// Initialize the closed list
-		std::vector<AStarPlannerNode> closed_list;
+		std::vector<AStarPlannerNode*> closed_list;
 
 		// Put the starting node on the open list
-		open_list.push_back(AStarPlannerNode(start, double(0), double(0), double(0), NULL));
+		AStarPlannerNode* root = new AStarPlannerNode(start, double(0), double(0), double(0), NULL);
+		open_list.push_back(root);
 
 		// while openlist is not empty
 		while (!open_list.empty()) {
 			// find the node with the least f on the open list, call it "q"
 			int indexOfQ = indexWithLeastF(open_list);
-			AStarPlannerNode q = open_list[indexOfQ];
+			AStarPlannerNode* q = open_list[indexOfQ];
 
-			std::cout << "Q: " << q << std::endl;
+			std::cout << "Q: " << *q << std::endl;
 			std::cout << "Open List {" << std::endl;
 			printList(open_list);
 			std::cout << "}" << std::endl;
@@ -182,7 +184,7 @@ namespace SteerLib
 			open_list.erase(open_list.begin() + indexOfQ);
 
 			// generate q's 8 successors and set their parents to q
-			std::vector<AStarPlannerNode> successors = getNeighbors(&q);
+			std::vector<AStarPlannerNode*> successors = getNeighbors(q);
 			std::cout << "successors {" << std::endl;
 			printList(successors);
 			std::cout << "}" << std::endl;
@@ -192,20 +194,20 @@ namespace SteerLib
 			// generate q's 8 successors and set their parents to q
 			for (int i = 0; i < successors.size(); i++) {
 				// if successor is the goal, stop the search
-				if (successors[i].point == goal) {
+				if (successors[i] -> point == goal) {
 					std::cout << "Found it!!!" << std::endl;
-					agent_path = trace(&successors[i]);
+					agent_path = trace(successors[i]);
 					return true;
 				}
 
 				// successor.g = q.g + distance between successor and q
-				successors[i].g = q.g + euclidean_distance(q.point, successors[i].point);
+				successors[i] -> g = q -> g + euclidean_distance(q -> point, successors[i] -> point);
 				
 				// successor.h = distance from goal to successor
-				successors[i].h = euclidean_distance(goal, successors[i].point);
+				successors[i] -> h = euclidean_distance(goal, successors[i] -> point);
 
 				// successor.f = successor.g + successor.h
-				successors[i].f = successors[i].g + successors[i].h;
+				successors[i] -> f = successors[i] -> g + successors[i] -> h;
 
 				std::cout << "i: " << i << ", successor: " << successors[i] << std::endl;
 
@@ -213,7 +215,7 @@ namespace SteerLib
 				bool skip = false;
 				for (int j = 0; j < open_list.size(); j++) {
 					// if a node with the same position as successor is in the OPEN list which has a lower f than successor, skip this successor
-					if (open_list[j].point == successors[i].point && open_list[j].f < successors[i].f) {
+					if (open_list[j] -> point == successors[i] -> point && open_list[j] -> f < successors[i] -> f) {
 						skip = true;
 						std::cout << "Already in open" << std::endl;
 					}
@@ -221,7 +223,7 @@ namespace SteerLib
 
 				for (int j = 0; j < closed_list.size(); j++) {
 					// if a node with the same position as successor is in the CLOSED list which has a lower f than successor, skip this successor
-					if (closed_list[j].point == successors[i].point && closed_list[j].f < successors[i].f) {
+					if (closed_list[j] -> point == successors[i] -> point && closed_list[j] -> f < successors[i] -> f) {
 						skip = true;
 						std::cout << "Already in closed" << std::endl;
 					}

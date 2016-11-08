@@ -102,11 +102,11 @@ namespace SteerLib
 			double euclidean_distance(Util::Point a, Util::Point b);
 
 			SteerLib::SpatialDataBaseInterface * gSpatialDatabase;
-			int indexWithLeastF(std::vector<AStarPlannerNode> list);
-			bool addNeighborIfGood(AStarPlannerNode* parent, std::vector<AStarPlannerNode> &neighbors, Util::Point point);
-			std::vector<AStarPlannerNode> getNeighbors(AStarPlannerNode* a);
+			int indexWithLeastF(std::vector<AStarPlannerNode*> list);
+			bool addNeighborIfGood(AStarPlannerNode* parent, std::vector<AStarPlannerNode*> &neighbors, Util::Point point);
+			std::vector<AStarPlannerNode*> getNeighbors(AStarPlannerNode* a);
 			std::vector<Util::Point> trace(AStarPlannerNode* node);
-			void printList(std::vector<AStarPlannerNode> list);
+			void printList(std::vector<AStarPlannerNode*> list);
 	};
 
 
