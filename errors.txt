@@ -1,0 +1,386 @@
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h: In function ‘float Util::computeBoxCirclePenetration2D(float, float, float, float, const Util::Point&, float)’:
+../../steerlib/include/util/Geometry.h:482:9: warning: variable ‘radiusSquared’ set but not used [-Wunused-but-set-variable]
+   float radiusSquared;
+         ^
+In file included from ../../steerlib/include/util/XMLParserPrivate.h:15:0,
+                 from ../../steerlib/include/util/XMLParser.h:14,
+                 from ../../steerlib/include/util/Misc.h:25,
+                 from ../../steerlib/include/Util.h:22,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../external/tinyxml/ticpp.h: At global scope:
+../../external/tinyxml/ticpp.h:988:8: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+   std::auto_ptr< Node > Clone() const;
+        ^
+In file included from /usr/include/c++/5/memory:81:0,
+                 from ../../external/tinyxml/ticpp.h:53,
+                 from ../../steerlib/include/util/XMLParserPrivate.h:15,
+                 from ../../steerlib/include/util/XMLParser.h:14,
+                 from ../../steerlib/include/util/Misc.h:25,
+                 from ../../steerlib/include/Util.h:22,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+/usr/include/c++/5/bits/unique_ptr.h:49:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^
+../../steerlib/src/AStarPlanner.cpp: In function ‘double SteerLib::euclidean_distance(Util::Point, Util::Point)’:
+../../steerlib/src/AStarPlanner.cpp:71:21: error: no match for ‘operator*’ (operand types are ‘Util::Point’ and ‘Util::Point’)
+   Util::Point d2 = a*b;
+                     ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h:166:9: note: candidate: Util::Point Util::Point::operator*(float) const
+   Point operator* (float c) const { return Point(c*x, c*y, c*z); }
+         ^
+../../steerlib/include/util/Geometry.h:166:9: note:   no known conversion for argument 1 from ‘Util::Point’ to ‘float’
+In file included from ../../steerlib/include/benchmarking/CompositeTechniqueEntropy.h:21:0,
+                 from ../../steerlib/include/benchmarking/BenchmarkEngine.h:26,
+                 from ../../steerlib/include/SteerLib.h:50,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/dmatrix.h:505:15: note: candidate: Matrix operator*(double, const Matrix&)
+ inline Matrix operator*(double a, const Matrix& q) { return q*a; }
+               ^
+../../steerlib/include/util/dmatrix.h:505:15: note:   no known conversion for argument 1 from ‘Util::Point’ to ‘double’
+In file included from ../../steerlib/include/util/Curve.h:16:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Color.h:42:28: note: candidate: Util::Color Util::operator*(float, const Util::Color&)
+  static inline Util::Color operator*( float f, const Util::Color & c) { return c*f; }
+                            ^
+../../steerlib/include/util/Color.h:42:28: note:   no known conversion for argument 1 from ‘Util::Point’ to ‘float’
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h:277:22: note: candidate: Util::Point Util::operator*(float, const Util::Point&)
+  static inline Point operator*(float c, const Point &pt) { return Point(c*pt.x, c*pt.y, c*pt.z); }
+                      ^
+../../steerlib/include/util/Geometry.h:277:22: note:   no known conversion for argument 1 from ‘Util::Point’ to ‘float’
+../../steerlib/include/util/Geometry.h:275:23: note: candidate: Util::Vector Util::operator*(float, const Util::Vector&)
+  static inline Vector operator*(float c, const Vector &vec) { return Vector(c*vec.x, c*vec.y, c*vec.z); }
+                       ^
+../../steerlib/include/util/Geometry.h:275:23: note:   no known conversion for argument 1 from ‘Util::Point’ to ‘float’
+../../steerlib/src/AStarPlanner.cpp: In function ‘int SteerLib::indexWithLeastF(std::vector<SteerLib::AStarPlannerNode>)’:
+../../steerlib/src/AStarPlanner.cpp:78:21: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i = 0; i < list.size(); i++) {
+                     ^
+../../steerlib/src/AStarPlanner.cpp:84:10: error: ‘i’ was not declared in this scope
+   return i;
+          ^
+../../steerlib/src/AStarPlanner.cpp: In function ‘void SteerLib::addNeighborIfGood(SteerLib::AStarPlannerNode, std::vector<SteerLib::AStarPlannerNode>, Util::Point)’:
+../../steerlib/src/AStarPlanner.cpp:88:8: error: ‘gSpatialDatabase’ was not declared in this scope
+   if (!gSpatialDatabase -> hasAnyItems(point.x, point.z)) {
+        ^
+../../steerlib/src/AStarPlanner.cpp:89:39: error: no matching function for call to ‘SteerLib::AStarPlannerNode::AStarPlannerNode(Util::Point&, int, int)’
+    AStarPlannerNode node(point, -1, -1);
+                                       ^
+In file included from ../../steerlib/src/AStarPlanner.cpp:16:0:
+../../steerlib/include/planning/AStarPlanner.h:37:4: note: candidate: SteerLib::AStarPlannerNode::AStarPlannerNode(Util::Point, double, double, SteerLib::AStarPlannerNode*)
+    AStarPlannerNode(Util::Point _point, double _g, double _f, AStarPlannerNode* _parent)
+    ^
+../../steerlib/include/planning/AStarPlanner.h:37:4: note:   candidate expects 4 arguments, 3 provided
+../../steerlib/include/planning/AStarPlanner.h:31:21: note: candidate: constexpr SteerLib::AStarPlannerNode::AStarPlannerNode(const SteerLib::AStarPlannerNode&)
+  class STEERLIB_API AStarPlannerNode{
+                     ^
+../../steerlib/include/planning/AStarPlanner.h:31:21: note:   candidate expects 1 argument, 3 provided
+../../steerlib/include/planning/AStarPlanner.h:31:21: note: candidate: constexpr SteerLib::AStarPlannerNode::AStarPlannerNode(SteerLib::AStarPlannerNode&&)
+../../steerlib/include/planning/AStarPlanner.h:31:21: note:   candidate expects 1 argument, 3 provided
+../../steerlib/src/AStarPlanner.cpp:90:16: error: cannot convert ‘SteerLib::AStarPlannerNode’ to ‘SteerLib::AStarPlannerNode*’ in assignment
+    node.parent = parent;
+                ^
+../../steerlib/src/AStarPlanner.cpp: In function ‘std::vector<SteerLib::AStarPlannerNode> SteerLib::getNeighbors(SteerLib::AStarPlannerNode)’:
+../../steerlib/src/AStarPlanner.cpp:98:69: error: no matching function for call to ‘Util::Point::Point(float&, float)’
+   addNeighborIfGood(a, neighbors, Util::Point(a.point.x, a.point.z+1);
+                                                                     ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h:147:3: note: candidate: Util::Point::Point(float, float, float)
+   Point(float newx, float newy, float newz) : x(newx), y(newy), z(newz) { }
+   ^
+../../steerlib/include/util/Geometry.h:147:3: note:   candidate expects 3 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:146:3: note: candidate: Util::Point::Point()
+   Point() : x(0.0f), y(0.0f), z(0.0f) { }
+   ^
+../../steerlib/include/util/Geometry.h:146:3: note:   candidate expects 0 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(const Util::Point&)
+  class UTIL_API Point {
+                 ^
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(Util::Point&&)
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/src/AStarPlanner.cpp:101:71: error: no matching function for call to ‘Util::Point::Point(float, float)’
+   addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, a.point.z+1);
+                                                                       ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h:147:3: note: candidate: Util::Point::Point(float, float, float)
+   Point(float newx, float newy, float newz) : x(newx), y(newy), z(newz) { }
+   ^
+../../steerlib/include/util/Geometry.h:147:3: note:   candidate expects 3 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:146:3: note: candidate: Util::Point::Point()
+   Point() : x(0.0f), y(0.0f), z(0.0f) { }
+   ^
+../../steerlib/include/util/Geometry.h:146:3: note:   candidate expects 0 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(const Util::Point&)
+  class UTIL_API Point {
+                 ^
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(Util::Point&&)
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/src/AStarPlanner.cpp:104:69: error: no matching function for call to ‘Util::Point::Point(float, float&)’
+   addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, a.point.z);
+                                                                     ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h:147:3: note: candidate: Util::Point::Point(float, float, float)
+   Point(float newx, float newy, float newz) : x(newx), y(newy), z(newz) { }
+   ^
+../../steerlib/include/util/Geometry.h:147:3: note:   candidate expects 3 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:146:3: note: candidate: Util::Point::Point()
+   Point() : x(0.0f), y(0.0f), z(0.0f) { }
+   ^
+../../steerlib/include/util/Geometry.h:146:3: note:   candidate expects 0 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(const Util::Point&)
+  class UTIL_API Point {
+                 ^
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(Util::Point&&)
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/src/AStarPlanner.cpp:107:72: error: no matching function for call to ‘Util::Point::Point(float, float)’
+   addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, a.point.z -1);
+                                                                        ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h:147:3: note: candidate: Util::Point::Point(float, float, float)
+   Point(float newx, float newy, float newz) : x(newx), y(newy), z(newz) { }
+   ^
+../../steerlib/include/util/Geometry.h:147:3: note:   candidate expects 3 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:146:3: note: candidate: Util::Point::Point()
+   Point() : x(0.0f), y(0.0f), z(0.0f) { }
+   ^
+../../steerlib/include/util/Geometry.h:146:3: note:   candidate expects 0 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(const Util::Point&)
+  class UTIL_API Point {
+                 ^
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(Util::Point&&)
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/src/AStarPlanner.cpp:110:70: error: no matching function for call to ‘Util::Point::Point(float&, float)’
+   addNeighborIfGood(a, neighbors, Util::Point(a.point.x, a.point.z -1);
+                                                                      ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h:147:3: note: candidate: Util::Point::Point(float, float, float)
+   Point(float newx, float newy, float newz) : x(newx), y(newy), z(newz) { }
+   ^
+../../steerlib/include/util/Geometry.h:147:3: note:   candidate expects 3 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:146:3: note: candidate: Util::Point::Point()
+   Point() : x(0.0f), y(0.0f), z(0.0f) { }
+   ^
+../../steerlib/include/util/Geometry.h:146:3: note:   candidate expects 0 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(const Util::Point&)
+  class UTIL_API Point {
+                 ^
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(Util::Point&&)
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/src/AStarPlanner.cpp:113:72: error: no matching function for call to ‘Util::Point::Point(float, float)’
+   addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, a.point.z -1);
+                                                                        ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h:147:3: note: candidate: Util::Point::Point(float, float, float)
+   Point(float newx, float newy, float newz) : x(newx), y(newy), z(newz) { }
+   ^
+../../steerlib/include/util/Geometry.h:147:3: note:   candidate expects 3 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:146:3: note: candidate: Util::Point::Point()
+   Point() : x(0.0f), y(0.0f), z(0.0f) { }
+   ^
+../../steerlib/include/util/Geometry.h:146:3: note:   candidate expects 0 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(const Util::Point&)
+  class UTIL_API Point {
+                 ^
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(Util::Point&&)
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/src/AStarPlanner.cpp:116:69: error: no matching function for call to ‘Util::Point::Point(float, float&)’
+   addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, a.point.z);
+                                                                     ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h:147:3: note: candidate: Util::Point::Point(float, float, float)
+   Point(float newx, float newy, float newz) : x(newx), y(newy), z(newz) { }
+   ^
+../../steerlib/include/util/Geometry.h:147:3: note:   candidate expects 3 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:146:3: note: candidate: Util::Point::Point()
+   Point() : x(0.0f), y(0.0f), z(0.0f) { }
+   ^
+../../steerlib/include/util/Geometry.h:146:3: note:   candidate expects 0 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(const Util::Point&)
+  class UTIL_API Point {
+                 ^
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(Util::Point&&)
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/src/AStarPlanner.cpp:119:71: error: no matching function for call to ‘Util::Point::Point(float, float)’
+   addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, a.point.z+1);
+                                                                       ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h:147:3: note: candidate: Util::Point::Point(float, float, float)
+   Point(float newx, float newy, float newz) : x(newx), y(newy), z(newz) { }
+   ^
+../../steerlib/include/util/Geometry.h:147:3: note:   candidate expects 3 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:146:3: note: candidate: Util::Point::Point()
+   Point() : x(0.0f), y(0.0f), z(0.0f) { }
+   ^
+../../steerlib/include/util/Geometry.h:146:3: note:   candidate expects 0 arguments, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(const Util::Point&)
+  class UTIL_API Point {
+                 ^
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/include/util/Geometry.h:143:17: note: candidate: constexpr Util::Point::Point(Util::Point&&)
+../../steerlib/include/util/Geometry.h:143:17: note:   candidate expects 1 argument, 2 provided
+../../steerlib/src/AStarPlanner.cpp:120:2: warning: no return statement in function returning non-void [-Wreturn-type]
+  }
+  ^
+../../steerlib/src/AStarPlanner.cpp: In function ‘std::vector<Util::Point> SteerLib::trace(SteerLib::AStarPlannerNode)’:
+../../steerlib/src/AStarPlanner.cpp:124:15: error: no match for ‘operator!=’ (operand types are ‘SteerLib::AStarPlannerNode’ and ‘long int’)
+   while (node != NULL) {
+               ^
+../../steerlib/src/AStarPlanner.cpp:125:24: error: no matching function for call to ‘std::vector<Util::Point>::push_back(SteerLib::AStarPlannerNode&)’
+    trace.push_back(node);
+                        ^
+In file included from /usr/include/c++/5/vector:64:0,
+                 from ../../steerlib/src/AStarPlanner.cpp:7:
+/usr/include/c++/5/bits/stl_vector.h:913:7: note: candidate: void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = Util::Point; _Alloc = std::allocator<Util::Point>; std::vector<_Tp, _Alloc>::value_type = Util::Point]
+       push_back(const value_type& __x)
+       ^
+/usr/include/c++/5/bits/stl_vector.h:913:7: note:   no known conversion for argument 1 from ‘SteerLib::AStarPlannerNode’ to ‘const value_type& {aka const Util::Point&}’
+/usr/include/c++/5/bits/stl_vector.h:931:7: note: candidate: void std::vector<_Tp, _Alloc>::push_back(std::vector<_Tp, _Alloc>::value_type&&) [with _Tp = Util::Point; _Alloc = std::allocator<Util::Point>; std::vector<_Tp, _Alloc>::value_type = Util::Point]
+       push_back(value_type&& __x)
+       ^
+/usr/include/c++/5/bits/stl_vector.h:931:7: note:   no known conversion for argument 1 from ‘SteerLib::AStarPlannerNode’ to ‘std::vector<Util::Point>::value_type&& {aka Util::Point&&}’
+../../steerlib/src/AStarPlanner.cpp:126:9: error: no match for ‘operator=’ (operand types are ‘SteerLib::AStarPlannerNode’ and ‘SteerLib::AStarPlannerNode*’)
+    node = node.parent;
+         ^
+In file included from ../../steerlib/src/AStarPlanner.cpp:16:0:
+../../steerlib/include/planning/AStarPlanner.h:31:21: note: candidate: SteerLib::AStarPlannerNode& SteerLib::AStarPlannerNode::operator=(const SteerLib::AStarPlannerNode&)
+  class STEERLIB_API AStarPlannerNode{
+                     ^
+../../steerlib/include/planning/AStarPlanner.h:31:21: note:   no known conversion for argument 1 from ‘SteerLib::AStarPlannerNode*’ to ‘const SteerLib::AStarPlannerNode&’
+../../steerlib/include/planning/AStarPlanner.h:31:21: note: candidate: SteerLib::AStarPlannerNode& SteerLib::AStarPlannerNode::operator=(SteerLib::AStarPlannerNode&&)
+../../steerlib/include/planning/AStarPlanner.h:31:21: note:   no known conversion for argument 1 from ‘SteerLib::AStarPlannerNode*’ to ‘SteerLib::AStarPlannerNode&&’
+../../steerlib/src/AStarPlanner.cpp: In member function ‘bool SteerLib::AStarPlanner::computePath(std::vector<Util::Point>&, Util::Point, Util::Point, SteerLib::SpatialDataBaseInterface*, bool)’:
+../../steerlib/src/AStarPlanner.cpp:141:81: error: no matching function for call to ‘SteerLib::AStarPlannerNode::AStarPlannerNode(Util::Point&, double, int)’
+   open_list.push_back(AStarPlannerNode(start, euclidean_distance(start, goal), 0));
+                                                                                 ^
+In file included from ../../steerlib/src/AStarPlanner.cpp:16:0:
+../../steerlib/include/planning/AStarPlanner.h:37:4: note: candidate: SteerLib::AStarPlannerNode::AStarPlannerNode(Util::Point, double, double, SteerLib::AStarPlannerNode*)
+    AStarPlannerNode(Util::Point _point, double _g, double _f, AStarPlannerNode* _parent)
+    ^
+../../steerlib/include/planning/AStarPlanner.h:37:4: note:   candidate expects 4 arguments, 3 provided
+../../steerlib/include/planning/AStarPlanner.h:31:21: note: candidate: constexpr SteerLib::AStarPlannerNode::AStarPlannerNode(const SteerLib::AStarPlannerNode&)
+  class STEERLIB_API AStarPlannerNode{
+                     ^
+../../steerlib/include/planning/AStarPlanner.h:31:21: note:   candidate expects 1 argument, 3 provided
+../../steerlib/include/planning/AStarPlanner.h:31:21: note: candidate: constexpr SteerLib::AStarPlannerNode::AStarPlannerNode(SteerLib::AStarPlannerNode&&)
+../../steerlib/include/planning/AStarPlanner.h:31:21: note:   candidate expects 1 argument, 3 provided
+../../steerlib/src/AStarPlanner.cpp:156:22: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for (int i = 0; i < successors.size(); i++) {
+                      ^
+../../steerlib/src/AStarPlanner.cpp:167:19: error: ‘__gnu_cxx::__alloc_traits<std::allocator<SteerLib::AStarPlannerNode> >::value_type {aka class SteerLib::AStarPlannerNode}’ has no member named ‘h’
+     successors[i].h = euclidean_distance(goal, successors[i].point);
+                   ^
+../../steerlib/src/AStarPlanner.cpp:170:55: error: ‘__gnu_cxx::__alloc_traits<std::allocator<SteerLib::AStarPlannerNode> >::value_type {aka class SteerLib::AStarPlannerNode}’ has no member named ‘h’
+     successors[i].f = successors[i].g + successors[i].h;
+                                                       ^
+../../steerlib/src/AStarPlanner.cpp:172:23: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     for (int j = 0; j < open_list.size(); j++) {
+                       ^
+../../steerlib/src/AStarPlanner.cpp:174:32: error: ‘successor’ was not declared in this scope
+      if (open_list[j].point == successor[i].point && open_list[j].f < successors[i].f) {
+                                ^
+../../steerlib/src/AStarPlanner.cpp:179:23: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     for (int j = 0; j < closed_list.size(); j++) {
+                       ^
+../../steerlib/src/AStarPlanner.cpp:181:34: error: ‘successor’ was not declared in this scope
+      if (closed_list[j].point == successor[i].point && closed_list[j].f < successor[i].f) {
+                                  ^
+../../steerlib/src/AStarPlanner.cpp:187:25: error: ‘successor’ was not declared in this scope
+     open_list.push_back(successor[i]);
+                         ^
+In file included from ../../steerlib/include/testcaseio/TestCaseIOPrivate.h:21:0,
+                 from ../../steerlib/include/testcaseio/TestCaseIO.h:20,
+                 from ../../steerlib/include/SteerLib.h:26,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h: At global scope:
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:71:23: warning: inline function ‘virtual void SteerLib::SpatialDataBaseInterface::getGridCoordinatesFromIndex(unsigned int, unsigned int&, unsigned int&)’ used but never defined
+   virtual inline void getGridCoordinatesFromIndex(unsigned int cellIndex, unsigned int &xIndex, unsigned int & zIndex) = 0;
+                       ^
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:57:31: warning: inline function ‘virtual unsigned int SteerLib::SpatialDataBaseInterface::getNumCellsX()’ used but never defined
+   virtual inline unsigned int getNumCellsX() = 0;
+                               ^
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:59:31: warning: inline function ‘virtual unsigned int SteerLib::SpatialDataBaseInterface::getNumCellsZ()’ used but never defined
+   virtual inline unsigned int getNumCellsZ() = 0;
+                               ^
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:73:31: warning: inline function ‘virtual unsigned int SteerLib::SpatialDataBaseInterface::getCellIndexFromGridCoords(unsigned int, unsigned int)’ used but never defined
+   virtual inline unsigned int getCellIndexFromGridCoords(unsigned int x, unsigned int z) = 0;
+                               ^
+In file included from ../../steerlib/include/testcaseio/TestCaseIOPrivate.h:21:0,
+                 from ../../steerlib/include/testcaseio/TestCaseIO.h:20,
+                 from ../../steerlib/include/SteerLib.h:26,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:95:24: warning: inline function ‘virtual float SteerLib::SpatialDataBaseInterface::getTraversalCost(unsigned int)’ used but never defined
+   virtual inline float getTraversalCost( unsigned int cellIndex ) = 0;
+                        ^
+In file included from ../../steerlib/include/testcaseio/TestCaseIOPrivate.h:21:0,
+                 from ../../steerlib/include/testcaseio/TestCaseIO.h:20,
+                 from ../../steerlib/include/SteerLib.h:26,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:69:23: warning: inline function ‘virtual void SteerLib::SpatialDataBaseInterface::getLocationFromIndex(unsigned int, Util::Point&)’ used but never defined
+   virtual inline void getLocationFromIndex( unsigned int cellIndex, Util::Point & result ) = 0;
+                       ^
+make[1]: *** [obj/Release/steerlib/AStarPlanner.o] Error 1
+make: *** [steerlib] Error 2

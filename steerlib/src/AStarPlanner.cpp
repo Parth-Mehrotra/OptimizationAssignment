@@ -67,12 +67,12 @@ namespace SteerLib
 		return p;
 	}
 
-	double euclidean_distance(Util::Point a, Util::Point b) {
-		Util::Point d2 = a*b;
+	double AStarPlanner::euclidean_distance(Util::Point a, Util::Point b) {
+		Util::Point d2 = Util::Point(a*b;
 		return std::sqrt(d2.x + d2.z);
 	}
 
-	int indexWithLeastF(std::vector<AStarPlannerNode> list) { 
+	int AStarPlanner::indexWithLeastF(std::vector<AStarPlannerNode> list) { 
 		int min = std::numeric_limits<int>::max();
 		int index = -1;
 		for (int i = 0; i < list.size(); i++) {
@@ -84,7 +84,7 @@ namespace SteerLib
 		return i;
 	}
 
-	void addNeighborIfGood(AStarPlannerNode parent, std::vector<AStarPlannerNode> neighbors, Util::Point point) {
+	void AStarPlanner::addNeighborIfGood(AStarPlannerNode parent, std::vector<AStarPlannerNode> neighbors, Util::Point point) {
 		if (!gSpatialDatabase -> hasAnyItems(point.x, point.z)) {
 			AStarPlannerNode node(point, -1, -1);
 			node.parent = parent;
@@ -92,34 +92,34 @@ namespace SteerLib
 		}
 	}
 
-	std::vector<AStarPlannerNode> getNeighbors(AStarPlannerNode a) { 
+	std::vector<AStarPlannerNode> AStarPlannergetNeighbors(AStarPlannerNode a) { 
 		std::vector<AStarPlannerNode> neighbors;
 		// Top 
 		addNeighborIfGood(a, neighbors, Util::Point(a.point.x, a.point.z+1);
-
+		
 		// Top Right
 		addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, a.point.z+1);
-
+		
 		// Right
 		addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, a.point.z);
-
+		
 		// Right Bottom
 		addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, a.point.z -1);
-
+		
 		// Bottom
 		addNeighborIfGood(a, neighbors, Util::Point(a.point.x, a.point.z -1);
-
+		
 		// Bottom Left
 		addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, a.point.z -1);
-
+		
 		// Left
 		addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, a.point.z);
-
+		
 		// Left Top
 		addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, a.point.z+1);
 	}
 
-	std::vector<Util::Point> trace(AStarPlannerNode node) {
+	std::vector<Util::Point> AStarPlanner::trace(AStarPlannerNode node) {
 		std::vector<Util::Point> trace;
 		while (node != NULL) {
 			trace.push_back(node);
