@@ -32,6 +32,7 @@ namespace SteerLib
 		public:
 			double f;
 			double g;
+			double h;
 			Util::Point point;
 			AStarPlannerNode* parent;
 			AStarPlannerNode(Util::Point _point, double _g, double _f, AStarPlannerNode* _parent) {
@@ -48,6 +49,10 @@ namespace SteerLib
 			}
 			bool operator==(AStarPlannerNode other) const {
 				return ((this->point.x == other.point.x) && (this->point.z == other.point.z));
+			}
+
+			bool operator!=(AStarPlannerNode other) const {
+				return !(*this == other);
 			}
 
 	};
@@ -96,9 +101,9 @@ namespace SteerLib
 			double euclidean_distance(Util::Point a, Util::Point b);
 
 			SteerLib::SpatialDataBaseInterface * gSpatialDatabase;
-			int indexWithLeastF(std::vector<AStarPlannerNode> list;
-			void addNeighborIfGood(AStarPlannerNode parent, std::vector<AStarPlannerNode> neighbors, Util::Point point);
-			std::vector<AStarPlannerNode> getNeighbors(AStarPlannerNode a);
+			int indexWithLeastF(std::vector<AStarPlannerNode> list);
+			void addNeighborIfGood(AStarPlannerNode &parent, std::vector<AStarPlannerNode> neighbors, Util::Point point);
+			std::vector<AStarPlannerNode> getNeighbors(AStarPlannerNode &a);
 			std::vector<Util::Point> trace(AStarPlannerNode node);
 	};
 

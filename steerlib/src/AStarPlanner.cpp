@@ -68,8 +68,11 @@ namespace SteerLib
 	}
 
 	double AStarPlanner::euclidean_distance(Util::Point a, Util::Point b) {
-		Util::Point d2 = Util::Point(a*b;
-		return std::sqrt(d2.x + d2.z);
+		return std::sqrt(
+			(a.x - b.x) * (a.x - b.x) +
+			(a.y - b.y) * (a.y - b.y) + 
+			(a.z - b.z) * (a.z - b.z)
+			);
 	}
 
 	int AStarPlanner::indexWithLeastF(std::vector<AStarPlannerNode> list) { 
@@ -81,49 +84,49 @@ namespace SteerLib
 				index = i;
 			}
 		}
-		return i;
+		return index;
 	}
 
-	void AStarPlanner::addNeighborIfGood(AStarPlannerNode parent, std::vector<AStarPlannerNode> neighbors, Util::Point point) {
+	void AStarPlanner::addNeighborIfGood(AStarPlannerNode &parent, std::vector<AStarPlannerNode> neighbors, Util::Point point) {
 		if (!gSpatialDatabase -> hasAnyItems(point.x, point.z)) {
-			AStarPlannerNode node(point, -1, -1);
-			node.parent = parent;
+			AStarPlannerNode node(point, double(-1), double(-1), &parent);
 			neighbors.push_back(node);
 		}
 	}
 
-	std::vector<AStarPlannerNode> AStarPlannergetNeighbors(AStarPlannerNode a) { 
+	std::vector<AStarPlannerNode> AStarPlanner::getNeighbors(AStarPlannerNode& a) { 
 		std::vector<AStarPlannerNode> neighbors;
 		// Top 
-		addNeighborIfGood(a, neighbors, Util::Point(a.point.x, a.point.z+1);
+		addNeighborIfGood(a, neighbors, Util::Point(a.point.x, 0,  a.point.z+1));
 		
 		// Top Right
-		addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, a.point.z+1);
+		addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, 0,  a.point.z+1));
 		
 		// Right
-		addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, a.point.z);
+		addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, 0,  a.point.z));
 		
 		// Right Bottom
-		addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, a.point.z -1);
+		addNeighborIfGood(a, neighbors, Util::Point(a.point.x+1, 0,  a.point.z -1));
 		
 		// Bottom
-		addNeighborIfGood(a, neighbors, Util::Point(a.point.x, a.point.z -1);
+		addNeighborIfGood(a, neighbors, Util::Point(a.point.x, 0,  a.point.z -1));
 		
 		// Bottom Left
-		addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, a.point.z -1);
+		addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, 0,  a.point.z -1));
 		
 		// Left
-		addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, a.point.z);
+		addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, 0,  a.point.z));
 		
 		// Left Top
-		addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, a.point.z+1);
+		addNeighborIfGood(a, neighbors, Util::Point(a.point.x-1, 0,  a.point.z+1));
 	}
 
 	std::vector<Util::Point> AStarPlanner::trace(AStarPlannerNode node) {
 		std::vector<Util::Point> trace;
-		while (node != NULL) {
-			trace.push_back(node);
-			node = node.parent;
+		AStarPlannerNode* temp = &node;
+		while (temp != NULL) {
+			trace.push_back(temp -> point);
+			temp = temp -> parent;
 		}
 		return trace;
 	}
@@ -138,7 +141,7 @@ namespace SteerLib
 		std::vector<AStarPlannerNode> closed_list;
 
 		// Put the starting node on the open list
-		open_list.push_back(AStarPlannerNode(start, euclidean_distance(start, goal), 0));
+		open_list.push_back(AStarPlannerNode(start, euclidean_distance(start, goal), double(0), NULL));
 
 		// while openlist is not empty
 		while(!open_list.empty()) {
@@ -171,20 +174,20 @@ namespace SteerLib
 
 				for (int j = 0; j < open_list.size(); j++) {
 					// if a node with the same position as successor is in the OPEN list which has a lower f than successor, skip this successor
-					if (open_list[j].point == successor[i].point && open_list[j].f < successors[i].f) {
+					if (open_list[j].point == successors[i].point && open_list[j].f < successors[i].f) {
 						goto skip_this_successor;
 					}
 				}
 
 				for (int j = 0; j < closed_list.size(); j++) {
 					// if a node with the same position as successor is in the CLOSED list which has a lower f than successor, skip this successor
-					if (closed_list[j].point == successor[i].point && closed_list[j].f < successor[i].f) {
+					if (closed_list[j].point == successors[i].point && closed_list[j].f < successors[i].f) {
 						goto skip_this_successor;
 					}
 				}
 
 				//otherwise, add the node to the open list
-				open_list.push_back(successor[i]);
+				open_list.push_back(successors[i]);
 			}
 			skip_this_successor:
 			// push q on the closed list
