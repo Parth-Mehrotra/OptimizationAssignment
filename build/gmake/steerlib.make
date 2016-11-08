@@ -72,6 +72,7 @@ OBJECTS := \
 	$(OBJDIR)/CompositeTechnique01.o \
 	$(OBJDIR)/PerformanceProfiler.o \
 	$(OBJDIR)/SteeringCommand.o \
+	$(OBJDIR)/AStarPlanner.o \
 	$(OBJDIR)/AgentMetricsCollector.o \
 	$(OBJDIR)/BoxObstacle.o \
 	$(OBJDIR)/CompositeTechnique02.o \
@@ -190,6 +191,9 @@ $(OBJDIR)/PerformanceProfiler.o: ../../steerlib/src/PerformanceProfiler.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/SteeringCommand.o: ../../steerlib/src/SteeringCommand.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+$(OBJDIR)/AStarPlanner.o: ../../steerlib/src/AStarPlanner.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 $(OBJDIR)/AgentMetricsCollector.o: ../../steerlib/src/AgentMetricsCollector.cpp

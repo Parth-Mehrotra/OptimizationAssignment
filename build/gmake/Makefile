@@ -6,7 +6,7 @@ ifndef config
 endif
 export config
 
-PROJECTS := steersim steersimlib tinyxml util steerlib glfw simpleAI sfAI rvo2dAI pprAI collisionAI curveAI kdtree Recast DebugUtils Detour DetourCrowd navmesh steerbench
+PROJECTS := steersim steersimlib tinyxml util steerlib glfw simpleAI sfAI rvo2dAI pprAI collisionAI searchAI curveAI kdtree Recast DebugUtils Detour DetourCrowd navmesh steerbench
 
 .PHONY: all clean help $(PROJECTS)
 
@@ -56,6 +56,10 @@ collisionAI: steerlib util
 	@echo "==== Building collisionAI ($(config)) ===="
 	@${MAKE} --no-print-directory -C . -f collisionAI.make
 
+searchAI: steerlib util
+	@echo "==== Building searchAI ($(config)) ===="
+	@${MAKE} --no-print-directory -C . -f searchAI.make
+
 curveAI: steerlib util
 	@echo "==== Building curveAI ($(config)) ===="
 	@${MAKE} --no-print-directory -C . -f curveAI.make
@@ -100,6 +104,7 @@ clean:
 	@${MAKE} --no-print-directory -C . -f rvo2dAI.make clean
 	@${MAKE} --no-print-directory -C . -f pprAI.make clean
 	@${MAKE} --no-print-directory -C . -f collisionAI.make clean
+	@${MAKE} --no-print-directory -C . -f searchAI.make clean
 	@${MAKE} --no-print-directory -C . -f curveAI.make clean
 	@${MAKE} --no-print-directory -C . -f kdtree.make clean
 	@${MAKE} --no-print-directory -C . -f Recast.make clean
@@ -130,6 +135,7 @@ help:
 	@echo "   rvo2dAI"
 	@echo "   pprAI"
 	@echo "   collisionAI"
+	@echo "   searchAI"
 	@echo "   curveAI"
 	@echo "   kdtree"
 	@echo "   Recast"
