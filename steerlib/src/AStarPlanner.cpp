@@ -25,6 +25,10 @@
 
 namespace SteerLib
 {
+	std::ostream& operator<<(std::ostream &strm, const AStarPlannerNode &a) {
+		return strm << "AStarPlannerNode(" << a.point << ", " << a.f << ", " << a.g << ", " << a.h << ");";
+	}
+	
 	AStarPlanner::AStarPlanner(){}
 
 	AStarPlanner::~AStarPlanner(){}
@@ -132,6 +136,7 @@ namespace SteerLib
 	}
 
 	bool AStarPlanner::computePath(std::vector<Util::Point>& agent_path,  Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
+		std::cout << "Began" << std::endl;
 		gSpatialDatabase = _gSpatialDatabase;
 		// Psuedocode from: http://web.mit.edu/eranki/www/tutorials/search/
 		// Initialize the open list
@@ -142,23 +147,35 @@ namespace SteerLib
 
 		// Put the starting node on the open list
 		open_list.push_back(AStarPlannerNode(start, euclidean_distance(start, goal), double(0), NULL));
+		std::cout << "Put Starting Node in open" << std::endl;
+		std::cout << "Start: " << start << std::endl;
+		std::cout << "Goal: " << goal << std::endl;
+		std::cout << "Distance: " << euclidean_distance(start, goal) << std::endl;
 
 		// while openlist is not empty
 		while(!open_list.empty()) {
+			std::cout << "Began Loop" << std::endl;
+			std::cout << "Current size of open: " << open_list.size() << std::endl;
+			std::cout << "Current size of closed: " << closed_list.size() << std::endl;
 			// find the node with the least f on the open list, call it "q"
 			int indexOfQ = indexWithLeastF(open_list);
 			AStarPlannerNode q = open_list[indexOfQ];
+			std::cout << "Index of Q: " << indexOfQ << std::endl;
+			std::cout << "q: " << q << std::endl;
 
 			// pop q off the open list
 			open_list.erase(open_list.begin() + indexOfQ);
 
 			// generate q's 8 successors and set their parents to q
 			std::vector<AStarPlannerNode> successors = getNeighbors(q);
+			std::cout << "Got Successors" << std::endl;
 
 			// generate q's 8 successors and set their parents to q
 			for (int i = 0; i < successors.size(); i++) {
+				std::cout << "Going through successors" << std::endl;
 				// if successor is the goal, stop the search
 				if (successors[i].point == goal) {
+					std::cout << "Found goal" << std::endl;
 					agent_path = trace(successors[i]);
 					return true;
 				}
@@ -172,9 +189,12 @@ namespace SteerLib
 				// successor.f = successor.g + successor.h
 				successors[i].f = successors[i].g + successors[i].h;
 
+				std::cout << "Calculated g, h, and f" << std::endl;
+
 				for (int j = 0; j < open_list.size(); j++) {
 					// if a node with the same position as successor is in the OPEN list which has a lower f than successor, skip this successor
 					if (open_list[j].point == successors[i].point && open_list[j].f < successors[i].f) {
+						std::cout << "Skipping 1" << std::endl;
 						goto skip_this_successor;
 					}
 				}
@@ -182,12 +202,14 @@ namespace SteerLib
 				for (int j = 0; j < closed_list.size(); j++) {
 					// if a node with the same position as successor is in the CLOSED list which has a lower f than successor, skip this successor
 					if (closed_list[j].point == successors[i].point && closed_list[j].f < successors[i].f) {
+						std::cout << "Skipping 2" << std::endl;
 						goto skip_this_successor;
 					}
 				}
 
 				//otherwise, add the node to the open list
 				open_list.push_back(successors[i]);
+				std::cout << "Didn't Skip" << std::endl;
 			}
 			skip_this_successor:
 			// push q on the closed list
@@ -196,4 +218,5 @@ namespace SteerLib
 
 		return false;
 	}
+
 }

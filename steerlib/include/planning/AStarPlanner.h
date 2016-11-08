@@ -54,8 +54,8 @@ namespace SteerLib
 			bool operator!=(AStarPlannerNode other) const {
 				return !(*this == other);
 			}
-
 	};
+
 
 	
 
