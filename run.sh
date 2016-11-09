@@ -1,2 +1,2 @@
 cd build/bin;
-./steersim -testcase ../../path2.xml -ai searchAI
+./steersim -testcase ../../testcases/search-1.xml -ai searchAI
