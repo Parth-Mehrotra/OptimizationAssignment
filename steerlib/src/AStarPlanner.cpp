@@ -91,15 +91,18 @@ namespace SteerLib
 	}
 
 	bool AStarPlanner::addNeighborIfGood(AStarPlannerNode* parent, std::vector<AStarPlannerNode*> &neighbors, Util::Point point) {
-		std::cout << "Point that i'm checking: " << point << std::endl;
-		if (!gSpatialDatabase -> hasAnyItems(gSpatialDatabase -> getCellIndexFromLocation(point))) {
+		std::cout << "In collision method" << std::endl;
+		std::cout << "Point I'm checking: " << point << std::endl;
+		int dbIndex = gSpatialDatabase -> getCellIndexFromLocation(point);
+
+		if (canBeTraversed(dbIndex)) {
 			AStarPlannerNode* node = new AStarPlannerNode(point, double(0), double(0), double(0), parent);
 			neighbors.push_back(node);
+			std::cout << "It's fine" << std::endl;
 			return true;
-		} else {
-			std::cout << "Found Obstacle" << std::endl;
-		}
+		} 
 
+		std::cout << "Found Obstacle" << std::endl;
 		return false;
 	}
 
@@ -134,7 +137,6 @@ namespace SteerLib
 		
 		// Left Top
 		addNeighborIfGood(a, neighbors, Util::Point(a -> point.x-1, 0,  a -> point.z+1));
-		
 		return neighbors;
 	}
 
@@ -146,7 +148,6 @@ namespace SteerLib
 			temp = temp -> parent;
 			trace.push_back(temp -> point);
 		}
-		std::cout << "Terminated" << std::endl;
 		return trace;
 	}
 
@@ -157,6 +158,7 @@ namespace SteerLib
 	}
 
 	bool AStarPlanner::computePath(std::vector<Util::Point>& agent_path,  Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
+		std::cout << "Starting Path Compute" << std::endl;
 		gSpatialDatabase = _gSpatialDatabase;
 		// Psuedocode from: http://web.mit.edu/eranki/www/tutorials/search/
 		// Initialize the open list
@@ -171,32 +173,35 @@ namespace SteerLib
 
 		// while openlist is not empty
 		while (!open_list.empty()) {
+			std::cout << "Open List { " << std::endl;
+			printList(open_list);
+			std::cout << "}" << std::endl;
+
 			// find the node with the least f on the open list, call it "q"
 			int indexOfQ = indexWithLeastF(open_list);
 			AStarPlannerNode* q = open_list[indexOfQ];
 
-			std::cout << "Q: " << *q << std::endl;
-			std::cout << "Open List {" << std::endl;
-			printList(open_list);
-			std::cout << "}" << std::endl;
+			std::cout << "Chosen Q" << std::endl;
 
 			// pop q off the open list
 			open_list.erase(open_list.begin() + indexOfQ);
 
 			// generate q's 8 successors and set their parents to q
 			std::vector<AStarPlannerNode*> successors = getNeighbors(q);
-			std::cout << "successors {" << std::endl;
+			std::cout << "Successor size " << successors.size() << std::endl;
+
+			std::cout << "Successors to processes {" << std::endl;
 			printList(successors);
 			std::cout << "}" << std::endl;
 
-			std::cout << "Began successor computations" << std::endl;
-			
+
 			// generate q's 8 successors and set their parents to q
 			for (int i = 0; i < successors.size(); i++) {
+				std::cout << "Proccessing successor " << i << std::endl;
 				// if successor is the goal, stop the search
 				if (successors[i] -> point == goal) {
-					std::cout << "Found it!!!" << std::endl;
 					agent_path = trace(successors[i]);
+					std::cout << "Successor is goal" << std::endl;
 					return true;
 				}
 
@@ -209,15 +214,14 @@ namespace SteerLib
 				// successor.f = successor.g + successor.h
 				successors[i] -> f = successors[i] -> g + successors[i] -> h;
 
-				std::cout << "i: " << i << ", successor: " << successors[i] << std::endl;
-
+				std::cout << "Successor: " << *(successors[i]) << std::endl;
 
 				bool skip = false;
 				for (int j = 0; j < open_list.size(); j++) {
 					// if a node with the same position as successor is in the OPEN list which has a lower f than successor, skip this successor
 					if (open_list[j] -> point == successors[i] -> point && open_list[j] -> f < successors[i] -> f) {
 						skip = true;
-						std::cout << "Already in open" << std::endl;
+						std::cout << "Already in open list" << std::endl;
 					}
 				}
 
@@ -225,19 +229,21 @@ namespace SteerLib
 					// if a node with the same position as successor is in the CLOSED list which has a lower f than successor, skip this successor
 					if (closed_list[j] -> point == successors[i] -> point && closed_list[j] -> f < successors[i] -> f) {
 						skip = true;
-						std::cout << "Already in closed" << std::endl;
+						std::cout << "Already in closed list" << std::endl;
 					}
 				}
 
 				//otherwise, add the node to the open list
 				if (!skip) {
-					std::cout << "Added to open" << std::endl;
 					open_list.push_back(successors[i]);
+					std::cout << "A new node for us to explore later" << std::endl;
 				}
 			}
 			// push q on the closed list
 			closed_list.push_back(q);
-			std::cout << "Fully evaluated: " << q << std::endl;
+			std::cout << "Closed List {" << std::endl;
+			printList(closed_list);
+			std::cout << "}" << std::endl;
 		}
 
 		return false;
