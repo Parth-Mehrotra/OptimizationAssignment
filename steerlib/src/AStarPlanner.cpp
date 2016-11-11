@@ -256,7 +256,7 @@ namespace SteerLib
 			closed_list.push_back(q);
 		}
 
-		return false;
+		return true;
 	}
 
 
@@ -271,12 +271,12 @@ namespace SteerLib
 	void AStarPlanner::improvePath() {
 		//temp print
 		std::cout << "we in improvepath----------------" << std::endl;
-		std::cout << "we are printing open list: " << std::endl;
-		printList(open_list);
-		std::cout << "we are printing close list: " << std::endl;
-		printList(closed_list);
-		std::cout << "we are printing incons list: " << std::endl;
-		printList(incons_list);
+		//std::cout << "we are printing open list: " << std::endl;
+		//printList(open_list);
+		//std::cout << "we are printing close list: " << std::endl;
+		//printList(closed_list);
+		//std::cout << "we are printing incons list: " << std::endl;
+		//printList(incons_list);
 		
 		//2. minimum of fvalue of s of all s
 		int indexOfS = indexWithLeastfValueARA(open_list,w);
@@ -286,17 +286,19 @@ namespace SteerLib
 		std::cout << "w: " << w << std::endl;
 		//std::cout << "goalNode->point: " << goalNode->point << std::endl;
 		std::cout << "goalNode->g + w*goalNode->h: " << goalNode->g + w*goalNode->h << std::endl;
+		std::cout << "goalNode->f: " << goalNode->f << std::endl;
 		std::cout << " s->point: " << s->point << std::endl;
 		std::cout << "s->g: " << s->g << std::endl;
 		std::cout << "w*s->h: " << w*s->h << std::endl;
 		std::cout << "s->g+w*s->h: " << s->g + w*s->h << std::endl;
 		std::cout << "s->f: " << s->f << std::endl;
 		while (goalNode->f > s->f) {
+			std::cout << "goalNode->f > s->f: " << std::endl;
 			//3
 			open_list.erase(open_list.begin() + indexOfS);
 			//4
 			closed_list.push_back(s);
-			
+			std::cout << "not visited before.... add s: " << s << std::endl;
 			//std::cout << "we are printing open list: " << std::endl;
 			//printList(open_list);
 			//std::cout << "we are printing close list: " << std::endl;
@@ -319,19 +321,22 @@ namespace SteerLib
 				
 				//std::cout << "s_s: " <<s_s->point<< std::endl;
 				bool skip = false;
-				//6
+				//6. if s' was not visited before then...
+				//if not in closed list
 				for (int j = 0; j < closed_list.size(); j++) {
 					// if a node with the same position as successor is in the CLOSED list, we have visited it before
 					if (closed_list[j]->point == s_s->point) {
 						skip = true;
 					}
 				}
+				//if not in open list
 				for (int j = 0; j < open_list.size(); j++) {
 					// if a node with the same position as successor is in the CLOSED list, we have visited it before
 					if (open_list[j]->point == s_s->point) {
 						skip = true;
 					}
 				}
+				//if not in inconsistent list
 				for (int j = 0; j < incons_list.size(); j++) {
 					// if a node with the same position as successor is in the CLOSED list, we have visited it before
 					if (incons_list[j]->point == s_s->point) {
@@ -341,20 +346,23 @@ namespace SteerLib
 
 				//otherwise, add the node to the open list
 				if (!skip) {
+					//7. g(s')=inf
 					if (s_s->point == goalNode->point) {
 						goalNode->g = 100000;
 						goalNode->parent = s;
+						s_s->g = 100000;
+						s_s->parent = s;
 					}
 					else {
 						s_s->g = 100000;
 						s_s->parent = s;
 					}
-					//std::cout << "not visited before.... " << std::endl;
+					std::cout << "not visited before.... add s_s: "<<s_s << std::endl;
 				}
 				//8
 				if (s_s->g > s->g + euclidean_distance(s->point, s_s->point)) {
 					if (s_s->point == goalNode->point) {
-						s->g + euclidean_distance(s->point, s_s->point);
+						goalNode->g=s->g + euclidean_distance(s->point, s_s->point);
 					}
 					s_s->g = s->g + euclidean_distance(s->point, s_s->point);
 					skip = false;
@@ -366,9 +374,17 @@ namespace SteerLib
 						}
 					}
 					if (!skip) {
-						s_s->h=euclidean_distance(s_s->point, goalNode->point);
-						s_s->f= s_s->g + w*s_s->h;
-						open_list.push_back(s_s);
+						if (s_s->point == goalNode->point) {
+							goalNode->h = euclidean_distance(s_s->point, goalNode->point);
+							goalNode->f = goalNode->g + w*goalNode->h;
+							open_list.push_back(goalNode);
+						}
+						else {
+							s_s->h = euclidean_distance(s_s->point, goalNode->point);
+							s_s->f = s_s->g + w*s_s->h;
+							open_list.push_back(s_s);
+						}
+						
 						//std::cout << "we put in open list with f: " << s_s->g+w*s_s->h << std::endl;
 					}
 					else {
@@ -400,14 +416,6 @@ namespace SteerLib
 			//std::cin >> x;
 		}
 		
-		std::cout << "we in improvepath----------------" << std::endl;
-		std::cout << "we are printing open list: " << std::endl;
-		printList(open_list);
-		std::cout << "we are printing close list: " << std::endl;
-		printList(closed_list);
-		std::cout << "we are printing incons list: " << std::endl;
-		printList(incons_list);
-		
 		
 		
 		//AStarPlannerNode* temp = new AStarPlannerNode(Util::Point(0,1,2), double(0), double(0), double(0), NULL);
@@ -415,10 +423,9 @@ namespace SteerLib
 	}
 	
 	bool AStarPlanner::ARAStar(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
+		//original
 		gSpatialDatabase = _gSpatialDatabase;
-		
-		
-		
+
 			//1.g(s_start)=0
 			root = new AStarPlannerNode(start, double(0), w*euclidean_distance(goal, start), euclidean_distance(goal, start), NULL);
 			//1.g(s_goal)=INF
@@ -444,18 +451,18 @@ namespace SteerLib
 
 			//5, e'=min(e,g(s_goal)/min_s in OPENuINCONS(g(s)+h(s)))
 			int minOPENi = indexWithLeastghARA(open_list);
-			std::cout << " minOPEN: " << minOPENi << std::endl;
+			//std::cout << " minOPEN: " << minOPENi << std::endl;
 			int minINCONSi = indexWithLeastghARA(incons_list);
-			std::cout << " minINCONS: " << minINCONSi << std::endl;
+			//std::cout << " minINCONS: " << minINCONSi << std::endl;
 			float minOPEN = 1000000;
 			float minINCONS = 1000000;
 			if (minOPENi != -1) {
 				minOPEN = open_list[minOPENi]->g + open_list[minOPENi]->h;
-				std::cout << " minOPEN: " << minOPEN << std::endl;
+				//std::cout << " minOPEN: " << minOPEN << std::endl;
 			}
 			if (minINCONSi != -1) {
 				minINCONS = incons_list[minINCONSi]->g + incons_list[minINCONSi]->h;
-				std::cout << " minINCONS: " << minINCONS << std::endl;
+				//std::cout << " minINCONS: " << minINCONS << std::endl;
 			}
 
 			float minOPENuINCONS = 1000000;
@@ -466,8 +473,8 @@ namespace SteerLib
 				minOPENuINCONS = minOPEN;
 			}
 			//std::cout << " minWGs_goal: " << minWGs_goal << std::endl;
-			std::cout << " minOPENuINCONS: " << minOPENuINCONS << std::endl;
-			std::cout << " goalNode->g: " << goalNode->g << std::endl;
+			//std::cout << " minOPENuINCONS: " << minOPENuINCONS << std::endl;
+			//std::cout << " goalNode->g: " << goalNode->g << std::endl;
 			if (w > (goalNode->g)/ minOPENuINCONS) {
 				w_s = (goalNode->g) / minOPENuINCONS;
 			}
@@ -481,8 +488,6 @@ namespace SteerLib
 			agent_path = trace(goalNode);
 
 			std::cout << " w_s: " << w_s << std::endl;
-
-			
 			clockMeasure.updateRealTime();
 			//return true;
 			std::cout << " time: " << clockMeasure.getCurrentRealTime() << std::endl;
@@ -561,70 +566,6 @@ namespace SteerLib
 			std::cin >> x;
 		}
 
-
-
-		/*
-		// while openlist is not empty
-		while (!open_list.empty()) {
-
-			// find the node with the least f on the open list, call it "q"
-			int indexOfQ = indexWithLeastF(open_list);
-			AStarPlannerNode* q = open_list[indexOfQ];
-
-
-			// pop q off the open list
-			open_list.erase(open_list.begin() + indexOfQ);
-
-			// generate q's 8 successors and set their parents to q
-			std::vector<AStarPlannerNode*> successors = getNeighbors(q);
-
-
-
-			// generate q's 8 successors and set their parents to q
-			for (int i = 0; i < successors.size(); i++) {
-				// if successor is the goal, stop the search
-				if (successors[i]->point == goal) {
-					agent_path = trace(successors[i]);
-					return true;
-				}
-
-				// successor.g = q.g + distance between successor and q
-				successors[i]->g = q->g + euclidean_distance(q->point, successors[i]->point);
-
-				// successor.h = distance from goal to successor
-				successors[i]->h = euclidean_distance(goal, successors[i]->point);
-
-				// successor.f = successor.g + successor.h
-				successors[i]->f = successors[i]->g + successors[i]->h;
-
-
-				bool skip = false;
-				for (int j = 0; j < open_list.size(); j++) {
-					// if a node with the same position as successor is in the OPEN list which has a lower f than successor, skip this successor
-					if (open_list[j]->point == successors[i]->point && open_list[j]->f < successors[i]->f) {
-						skip = true;
-					}
-				}
-
-				for (int j = 0; j < closed_list.size(); j++) {
-					// if a node with the same position as successor is in the CLOSED list which has a lower f than successor, skip this successor
-					if (closed_list[j]->point == successors[i]->point && closed_list[j]->f < successors[i]->f) {
-						skip = true;
-					}
-				}
-
-				//otherwise, add the node to the open list
-				if (!skip) {
-					open_list.push_back(successors[i]);
-				}
-			}
-			// push q on the closed list
-			closed_list.push_back(q);
-		}
-
-
-		*/
-
 		return true;
 		
 
@@ -640,18 +581,29 @@ namespace SteerLib
 
 
 	bool AStarPlanner::computePath(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
-
-
-		//return weightedAStar(agent_path,start, goal, _gSpatialDatabase,  append_to_path);
-		 w = 10;
+		int kindOfAStar;
+		std::cout << "enter a kind of A* (0:Weighted A*, 1:ARA*, 2:AD*): " << std::endl;
+		std::cin >> kindOfAStar;
+		std::cout << "enter a weight: " << std::endl;
+		std::cin >> w;
+		 //w = 10;
 		 w_s = 0;
-		 maxTime = 10;
+		 maxTime = 100;
 		 clockMeasure.reset();
 		 clockMeasure.updateRealTime();
 		 //clockMeasure.advanceSimulationAndUpdateRealTime();
 		 
-		
-		return ARAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+		 switch (kindOfAStar) {
+			
+			case 1:
+				return ARAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+			case 2:
+				return ADStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+			default:
+				return weightedAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+		 }
+		 
+		//return ARAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
 		//return ADStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
 
 	}
