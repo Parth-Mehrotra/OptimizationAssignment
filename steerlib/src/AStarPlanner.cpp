@@ -270,7 +270,7 @@ namespace SteerLib
 
 	void AStarPlanner::improvePath() {
 		//temp print
-		std::cout << "we in improvepath----------------" << std::endl;
+		//std::cout << "we in improvepath----------------" << std::endl;
 		//std::cout << "we are printing open list: " << std::endl;
 		//printList(open_list);
 		//std::cout << "we are printing close list: " << std::endl;
@@ -283,28 +283,14 @@ namespace SteerLib
 		AStarPlannerNode* s= open_list[indexOfS];
 		
 		//temp print
-		std::cout << "w: " << w << std::endl;
-		//std::cout << "goalNode->point: " << goalNode->point << std::endl;
-		std::cout << "goalNode->g + w*goalNode->h: " << goalNode->g + w*goalNode->h << std::endl;
-		std::cout << "goalNode->f: " << goalNode->f << std::endl;
-		std::cout << " s->point: " << s->point << std::endl;
-		std::cout << "s->g: " << s->g << std::endl;
-		std::cout << "w*s->h: " << w*s->h << std::endl;
-		std::cout << "s->g+w*s->h: " << s->g + w*s->h << std::endl;
-		std::cout << "s->f: " << s->f << std::endl;
+		
 		while (goalNode->f > s->f) {
-			std::cout << "goalNode->f > s->f: " << std::endl;
+			
 			//3
 			open_list.erase(open_list.begin() + indexOfS);
 			//4
 			closed_list.push_back(s);
-			std::cout << "not visited before.... add s: " << s << std::endl;
-			//std::cout << "we are printing open list: " << std::endl;
-			//printList(open_list);
-			//std::cout << "we are printing close list: " << std::endl;
-			//printList(closed_list);
-			//std::cout << "we are printing incons list: " << std::endl;
-			//printList(incons_list);
+			
 
 			//5
 			std::vector<AStarPlannerNode*> successors = getNeighbors(s);
@@ -315,7 +301,7 @@ namespace SteerLib
 				if (s_s->point == goalNode->point) {
 					s_s = goalNode;
 					
-					//std::cout << "goalNode found: " << s_s->point << std::endl;
+					
 				}
 				
 				
@@ -357,7 +343,7 @@ namespace SteerLib
 						s_s->g = 100000;
 						s_s->parent = s;
 					}
-					std::cout << "not visited before.... add s_s: "<<s_s << std::endl;
+				
 				}
 				//8
 				if (s_s->g > s->g + euclidean_distance(s->point, s_s->point)) {
@@ -407,13 +393,16 @@ namespace SteerLib
 			}
 
 			
-			//std::cout << "goalNode->g + w*goalNode->h: " << goalNode->g + w*goalNode->h << std::endl;
-			//std::cout << "s->g+w*s->h: " << s->g + w*s->h << std::endl;
-			//std::cout << "goalNode->point: " << goalNode->point << std::endl;
-			//std::cout << " s->point: " << s->point << std::endl;
-
+			
+			//std::cout << "we are printing open list: " << std::endl;
+			//printList(open_list);
+			//std::cout << "we are printing close list: " << std::endl;
+			//printList(closed_list);
+			//std::cout << "we are printing incons list: " << std::endl;
+			//printList(incons_list);
 			int x;
 			//std::cin >> x;
+
 		}
 		
 		
@@ -442,13 +431,7 @@ namespace SteerLib
 			//4 ImprovePath();
 			improvePath();
 
-			//std::cout << "we are printing open list: " << std::endl;
-			//printList(open_list);
-			//std::cout << "we are printing close list: " << std::endl;
-			//printList(closed_list);
-			//std::cout << "we are printing incons list: " << std::endl;
-			//printList(incons_list);
-
+			
 			//5, e'=min(e,g(s_goal)/min_s in OPENuINCONS(g(s)+h(s)))
 			int minOPENi = indexWithLeastghARA(open_list);
 			//std::cout << " minOPEN: " << minOPENi << std::endl;
@@ -472,9 +455,6 @@ namespace SteerLib
 			else {
 				minOPENuINCONS = minOPEN;
 			}
-			//std::cout << " minWGs_goal: " << minWGs_goal << std::endl;
-			//std::cout << " minOPENuINCONS: " << minOPENuINCONS << std::endl;
-			//std::cout << " goalNode->g: " << goalNode->g << std::endl;
 			if (w > (goalNode->g)/ minOPENuINCONS) {
 				w_s = (goalNode->g) / minOPENuINCONS;
 			}
@@ -496,7 +476,8 @@ namespace SteerLib
 		//7. while w_s>1...
 		while (w_s >= 1&& clockMeasure.getCurrentRealTime()<maxTime) {
 			//8. decrease w.
-			w = w - 1;
+			w = w_s - .1f;
+			std::cout << " w: " << w << std::endl;
 			if (w < 0) {
 				w = 0;
 			}
@@ -514,27 +495,22 @@ namespace SteerLib
 			closed_list.clear();
 			//12.
 			improvePath();
-			//std::cout << "we are printing open list: " << std::endl;
-			//printList(open_list);
-			//std::cout << "we are printing close list: " << std::endl;
-			//printList(closed_list);
-			//std::cout << "we are printing incons list: " << std::endl;
-			//printList(incons_list);
+			
 
 			//13.
 			int minOPENi = indexWithLeastghARA(open_list);
-			std::cout << " minOPEN: " << minOPENi << std::endl;
+			
 			int minINCONSi = indexWithLeastghARA(incons_list);
-			std::cout << " minINCONS: " << minINCONSi << std::endl;
+			
 			float minOPEN = 1000000;
 			float minINCONS = 1000000;
 			if (minOPENi != -1) {
 				minOPEN = open_list[minOPENi]->g + open_list[minOPENi]->h;
-				std::cout << " minOPEN: " << minOPEN << std::endl;
+				
 			}
 			if (minINCONSi != -1) {
 				minINCONS = incons_list[minINCONSi]->g + incons_list[minINCONSi]->h;
-				std::cout << " minINCONS: " << minINCONS << std::endl;
+				
 			}
 
 			float minOPENuINCONS = 0;
@@ -544,9 +520,7 @@ namespace SteerLib
 			else {
 				minOPENuINCONS = minOPEN;
 			}
-			std::cout << " goalNode->g: " << goalNode->g << std::endl;
-			//std::cout << " minWGs_goal: " << minWGs_goal << std::endl;
-			std::cout << " minOPENuINCONS: " << minOPENuINCONS << std::endl;
+			
 			if (w > (goalNode->g) / minOPENuINCONS) {
 				w_s = (goalNode->g) / minOPENuINCONS;
 			}
@@ -559,7 +533,7 @@ namespace SteerLib
 			agent_path = trace(goalNode);
 
 			std::cout << " w_s: " << w_s << std::endl;
-			std::cout << " w: " << w << std::endl;
+			
 			clockMeasure.updateRealTime();
 			std::cout << " time: " << clockMeasure.getCurrentRealTime() << std::endl;
 			int x;
@@ -571,7 +545,27 @@ namespace SteerLib
 
 	}
 
+
+
+	//AD* helpers:
+	std::vector<float> AStarPlanner::key(AStarPlannerNode *s) {
+		std::vector<float> values;
+		values.push_back(min(s->g, s->rhs));
+		values.push_back(min(s->g, s->rhs));
+		return values;
+	}
+
+	void AStarPlanner::updateStateAD(AStarPlannerNode *s) {
+		
+	}
+
+	void AStarPlanner::computeShortestPathAD() {
+
+	}
+
+
 	bool AStarPlanner::ADStar(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
+
 
 		return false;
 
@@ -588,7 +582,7 @@ namespace SteerLib
 		std::cin >> w;
 		 //w = 10;
 		 w_s = 0;
-		 maxTime = 100;
+		 maxTime = 100000;
 		 clockMeasure.reset();
 		 clockMeasure.updateRealTime();
 		 //clockMeasure.advanceSimulationAndUpdateRealTime();
@@ -597,8 +591,8 @@ namespace SteerLib
 			
 			case 1:
 				return ARAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
-			case 2:
-				return ADStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+			//case 2:
+			//	return ADStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
 			default:
 				return weightedAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
 		 }
