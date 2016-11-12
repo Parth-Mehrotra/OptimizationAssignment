@@ -266,14 +266,7 @@ namespace SteerLib
 
 
 	void AStarPlanner::improvePath() {
-		//temp print
-		//std::cout << "we in improvepath----------------" << std::endl;
-		//std::cout << "we are printing open list: " << std::endl;
-		//printList(open_list);
-		//std::cout << "we are printing close list: " << std::endl;
-		//printList(closed_list);
-		//std::cout << "we are printing incons list: " << std::endl;
-		//printList(incons_list);
+		
 		
 		//2. minimum of fvalue of s of all s
 		int indexOfS = indexWithLeastfValueARA(open_list,w);
@@ -405,13 +398,24 @@ namespace SteerLib
 		
 		
 		//AStarPlannerNode* temp = new AStarPlannerNode(Util::Point(0,1,2), double(0), double(0), double(0), NULL);
+		
+		
+		
+		//temp print
+		std::cout << "we in improvepath----------------" << std::endl;
+		std::cout << "we are printing open list: " << std::endl;
+		printList(open_list);
+		std::cout << "we are printing close list: " << std::endl;
+		printList(closed_list);
+		std::cout << "we are printing incons list: " << std::endl;
+		printList(incons_list);
+		
 		//open_list.push_back(temp);
+		int y;
+		std::cin >> y;
 	}
 	
 	bool AStarPlanner::ARAStar(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
-		//original
-		gSpatialDatabase = _gSpatialDatabase;
-
 			//1.g(s_start)=0
 			root = new AStarPlannerNode(start, double(0), w*euclidean_distance(goal, start), euclidean_distance(goal, start), NULL);
 			//1.g(s_goal)=INF
@@ -471,9 +475,9 @@ namespace SteerLib
 			int x;
 			std::cin >> x;
 		//7. while w_s>1...
-		while (w_s >= 1&& clockMeasure.getCurrentRealTime()<maxTime) {
+		while (w_s > 1&& clockMeasure.getCurrentRealTime()<maxTime) {
 			//8. decrease w.
-			w = w_s - .1f;
+			w = w_s - .05f;
 			std::cout << " w: " << w << std::endl;
 			if (w < 0) {
 				w = 0;
