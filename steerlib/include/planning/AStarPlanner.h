@@ -34,6 +34,7 @@ namespace SteerLib
 			double g;
 			double h;
 			double rhs;
+			std::vector<float> key;
 			Util::Point point;
 			AStarPlannerNode* parent;
 			AStarPlannerNode(Util::Point _point, double _g, double _f, double _h, AStarPlannerNode* _parent) {
@@ -121,6 +122,7 @@ namespace SteerLib
 			std::vector<float> key(AStarPlannerNode *s);
 			void updateStateAD(AStarPlannerNode *s);
 			void computeShortestPathAD();
+			bool KeyAlessthanB(AStarPlannerNode *s, AStarPlannerNode *s2);
 			bool ADStar(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path = false);
 			bool computePath(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path = false);
 		private:

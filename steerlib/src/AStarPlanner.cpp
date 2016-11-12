@@ -550,24 +550,200 @@ namespace SteerLib
 	//AD* helpers:
 	std::vector<float> AStarPlanner::key(AStarPlannerNode *s) {
 		std::vector<float> values;
-		values.push_back(min(s->g, s->rhs));
-		values.push_back(min(s->g, s->rhs));
+		//1.if(g(s)>rhs(s))
+		if (s->g > s->rhs) {
+			//2. return [rhs(s)+w*h(s_start,s);rhs(s)]
+			values.push_back(s->rhs+w*euclidean_distance(root->point, s->point));
+			values.push_back(s->rhs);
+		}
+		//3. else
+		else {
+			//4. return [g(s)+h(s_start,s);g(s)]
+			values.push_back(s->g + euclidean_distance(root->point, s->point));
+			values.push_back(s->g);
+		}
+
 		return values;
 	}
 
 	void AStarPlanner::updateStateAD(AStarPlannerNode *s) {
-		
+		//5.  if(s was not visitited before)
+		bool skipOPEN = false;
+		bool skipINCONS= false;
+		bool skipCLOSED = false;
+		int indexOfS=-1;
+		for (int j = 0; j < open_list.size(); j++) {
+			if (open_list[j]->point == s->point) {
+				indexOfS = j;
+				skipOPEN = true;
+			}
+		}
+		for (int j = 0; j < incons_list.size(); j++) {
+			if (incons_list[j]->point == s->point) {
+				skipINCONS = true;
+			}
+		}
+		for (int j = 0; j < closed_list.size(); j++) {
+			if (closed_list[j]->point == s->point) {
+				skipCLOSED = true;
+			}
+		}
+		if (!skipOPEN && !skipINCONS&&!skipCLOSED) {
+			//6. g(s)=inf
+			s->g = 10000000;
+		}
+
+		//7. if(s is not equal to s_goal)
+		if (s->point != goalNode->point) {
+			//rhs(s)=min for s' in successors of s (c(s,s')+g(s'))
+			std::vector<AStarPlannerNode*> successors = getNeighbors(s);
+			// generate q's 8 successors and set their parents to q
+			float minimumS_s = 100000000;
+			for (int i = 0; i < successors.size(); i++) {
+				AStarPlannerNode* s_s = successors[i];
+				float costOfMoving = s_s->g + euclidean_distance(s->point, s_s->point);
+				if (costOfMoving < minimumS_s) {
+					minimumS_s = costOfMoving;
+				}
+			}
+			s->rhs = minimumS_s;
+		}
+		//8. if(s is in open, remove s from Open)
+		if (skipOPEN) {
+			open_list.erase(open_list.begin() + indexOfS);
+		}
+
+
+		//9. if(g(s)!=rhs(s))
+		if (s->g != s->rhs) {
+			//10. if(s!=CLOSED)
+			if (!skipCLOSED) {
+				//11. Insert s into OPEN with key(s)
+				s->key = key(s);
+				open_list.push_back(s);
+			}
+			//12. else
+			else {
+				//13. insert s into incons
+				incons_list.push_back(s);
+			}
+			
+		}
+	}
+
+	bool AStarPlanner::KeyAlessthanB(AStarPlannerNode *s, AStarPlannerNode *s2) {
+	
+		return ((s->key)[0] < (s2->key)[0]) || (((s->key)[0] == (s2->key)[0])&& (s->key)[1] < (s2->key)[1]);
 	}
 
 	void AStarPlanner::computeShortestPathAD() {
-
+		//7. while (min of s in OPEN) (key(s))<key(s_star) OR rhs(s_start) not equal to g(s_start)
+		//first find that minimum
+		
+		//std::vector<float> minkey;
+		AStarPlannerNode * minkey;
+		int minkeyPosition;
+		for (int j = 0; j < open_list.size(); j++) {
+			if (j == 0) {
+				minkey = open_list[0];
+				minkeyPosition = 0;
+			}
+			if (KeyAlessthanB(open_list[j], minkey)) {
+				minkey = open_list[j];
+				minkeyPosition = j;
+			}
+		}
+		while (KeyAlessthanB(minkey, root)||(root->rhs!=root->g)) {
+			//15. remove state s with the minimum key from open
+			open_list.erase(open_list.begin() + minkeyPosition);
+			//16. if(g(s)>rhs(s))
+			if (minkey->g > minkey->rhs) {
+				//17. g(s)=rhs(s)
+				minkey->g = minkey->rhs;
+				//18. CLOSED = CLOSEDu{s}
+				closed_list.push_back(minkey);
+				//19. for all s' which is a predecessor of s, updateState(s')
+				AStarPlannerNode* predecessor = minkey;
+				while (predecessor->parent != NULL) {
+					predecessor = predecessor->parent;
+					updateStateAD(predecessor);
+				}
+			}
+			//20. else
+			else {
+				//21. g(s)=inf
+				minkey->g = 10000000;
+				//22. for all s' which is a predecessor of s and also s, updateState(s')
+				AStarPlannerNode* predecessor = minkey;
+				updateStateAD(predecessor);
+				while (predecessor->parent != NULL) {
+					predecessor = predecessor->parent;
+					updateStateAD(predecessor);
+				}
+			}
+		}
 	}
 
 
 	bool AStarPlanner::ADStar(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
+		//pseudocode: http://www.cs.cmu.edu/~ggordon/likhachev-etal.anytime-dstar.pdf
+		//f here is key...
+		//1.g(s_start) = INF
+		root = new AStarPlannerNode(start, 1000000, 0, 0, NULL);
+		//1.rhs(s_start)=INF
+		root->rhs = 1000000;
+		//1.g(s_goal)=INF
+		goalNode = new AStarPlannerNode(goal, 100000, 0, double(0), NULL);
+		//2.rhs(s_goal)=0
+		goalNode->rhs = 0;
+		//2. skip w_0
+		//3. OPEN=CLOSED=INCONS=empty
+		open_list.clear();
+		closed_list.clear();
+		incons_list.clear();
+		//4. insert s_goal into OPEN with key(s_goal)
+		goalNode->key = key(goalNode);
+		open_list.push_back(goalNode);
+		//5.computeorImprovePath()
+		computeShortestPathAD();
+		//6.publish current w-suboptimal solution
+		agent_path = trace(goalNode);
+
+		//7. forever
+		while (true) {
+			//8. if changes in edge costs are detected
 
 
-		return false;
+
+			//12. if significant edge cost changes were observed
+
+
+			//14. else if w>1
+
+
+			//16. move states from INCONS into OPEN
+			for (int i = 0; i < incons_list.size(); i++) {
+				open_list.push_back(incons_list[i]);
+			}
+			incons_list.clear();
+			//17. update the priorities for all s in open according to key(s)
+			for (int i = 0; i < open_list.size(); i++) {
+				open_list[i]->key = key(open_list[i]);
+			}
+			//18.CLOSED=empty
+			closed_list.clear();
+			//19.computeorImprovePath()
+			computeShortestPathAD();
+			//20. publish current solution
+			agent_path = trace(goalNode);
+			//21. if w=1
+			if (w == 1) {
+				//22. wait for changes in edge costs
+			}
+		}
+
+
+		return true;
 
 
 	}
