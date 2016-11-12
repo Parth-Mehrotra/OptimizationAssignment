@@ -87,6 +87,7 @@ namespace SteerLib
 			int placeInCode;
 			SteerLib::Clock clockMeasure;
 			float maxTime;
+			int edgeCostChanges;
 
 			std::vector<AStarPlannerNode*> open_list;
 			std::vector<AStarPlannerNode*> closed_list;

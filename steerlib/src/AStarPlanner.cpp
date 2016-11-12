@@ -115,13 +115,11 @@ namespace SteerLib
 
 	bool AStarPlanner::addNeighborIfGood(AStarPlannerNode* parent, std::vector<AStarPlannerNode*> &neighbors, Util::Point point) {
 		int dbIndex = gSpatialDatabase -> getCellIndexFromLocation(point);
-
 		if (canBeTraversed(dbIndex)) {
 			AStarPlannerNode* node = new AStarPlannerNode(point, double(0), double(0), double(0), parent);
 			neighbors.push_back(node);
 			return true;
 		} 
-
 		return false;
 	}
 
@@ -132,7 +130,6 @@ namespace SteerLib
 		
 		// Top Right
 		addNeighborIfGood(a, neighbors, Util::Point(a -> point.x+1, 0,  a -> point.z+1));
-		
 		
 		// Right
 		addNeighborIfGood(a, neighbors, Util::Point(a -> point.x+1, 0,  a -> point.z));
@@ -186,7 +183,7 @@ namespace SteerLib
 	}
 
 	bool AStarPlanner::weightedAStar(std::vector<Util::Point>& agent_path,  Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
-		gSpatialDatabase = _gSpatialDatabase;
+		
 		// Psuedocode from: http://web.mit.edu/eranki/www/tutorials/search/
 		// Initialize the open list
 		std::vector<AStarPlannerNode*> open_list;
@@ -632,14 +629,21 @@ namespace SteerLib
 	}
 
 	bool AStarPlanner::KeyAlessthanB(AStarPlannerNode *s, AStarPlannerNode *s2) {
-	
+		//std::cout << " 14.----------open_list-------" << std::endl;
 		return ((s->key)[0] < (s2->key)[0]) || (((s->key)[0] == (s2->key)[0])&& (s->key)[1] < (s2->key)[1]);
 	}
 
 	void AStarPlanner::computeShortestPathAD() {
 		//7. while (min of s in OPEN) (key(s))<key(s_star) OR rhs(s_start) not equal to g(s_start)
 		//first find that minimum
-		
+		//std::cout << "14.----------open_list-------" << std::endl;
+		//printList(open_list);
+		//std::cout << "14.----------closed_list-------" << std::endl;
+		//printList(closed_list);
+		//std::cout << "14.----------incons_list-------" << std::endl;
+		//printList(incons_list);
+		//std::cout << "14.----------------------------" << std::endl;
+
 		//std::vector<float> minkey;
 		AStarPlannerNode * minkey;
 		int minkeyPosition;
@@ -653,73 +657,125 @@ namespace SteerLib
 				minkeyPosition = j;
 			}
 		}
+		root->key = key(root);
+		//std::cout << "14. root->key[0]: " << root->key[0]<<". root->key[1]"<<root->key[1] << std::endl;
+		//std::cout << "14. the s/minkey is: "<< minkey->point << std::endl;
+		//std::cout << "(KeyAlessthanB(minkey, root): " << KeyAlessthanB(minkey, root) << std::endl;
 		while (KeyAlessthanB(minkey, root)||(root->rhs!=root->g)) {
+			//std::cout << "15.----------open_list-------" << std::endl;
+			//printList(open_list);
+			//std::cout << "15.----------closed_list-------" << std::endl;
+			//printList(closed_list);
+			//std::cout << "15.----------incons_list-------" << std::endl;
+			//printList(incons_list);
+			//std::cout << "15.----------------------------" << std::endl;
+
 			//15. remove state s with the minimum key from open
 			open_list.erase(open_list.begin() + minkeyPosition);
 			//16. if(g(s)>rhs(s))
 			if (minkey->g > minkey->rhs) {
+				//std::cout << "16.->17." << std::endl;
 				//17. g(s)=rhs(s)
 				minkey->g = minkey->rhs;
 				//18. CLOSED = CLOSEDu{s}
 				closed_list.push_back(minkey);
 				//19. for all s' which is a predecessor of s, updateState(s')
-				AStarPlannerNode* predecessor = minkey;
-				while (predecessor->parent != NULL) {
-					predecessor = predecessor->parent;
-					updateStateAD(predecessor);
+				std::vector<AStarPlannerNode*> predecessors = getNeighbors(minkey);
+				//std::cout << "19. finding predecessorrs" << std::endl;
+				for (int i = 0; i < predecessors.size(); i++) {
+					// if successor is the goal, stop the search
+					//std::cout << "19. updatepredecessor" << std::endl;
+					updateStateAD(predecessors[i]);
 				}
+				//AStarPlannerNode* predecessor = minkey;
+				/*while (predecessor->parent != NULL) {
+					predecessor = predecessor->parent;
+					std::cout << "19. updatepredecessor" << std::endl;
+					updateStateAD(predecessor);
+				}*/
+				//std::cout << "19. no more predecessors" << std::endl;
 			}
 			//20. else
 			else {
 				//21. g(s)=inf
 				minkey->g = 10000000;
 				//22. for all s' which is a predecessor of s and also s, updateState(s')
-				AStarPlannerNode* predecessor = minkey;
-				updateStateAD(predecessor);
-				while (predecessor->parent != NULL) {
-					predecessor = predecessor->parent;
-					updateStateAD(predecessor);
+				updateStateAD(minkey);
+				std::vector<AStarPlannerNode*> predecessors = getNeighbors(minkey);
+				for (int i = 0; i < predecessors.size(); i++) {
+					// if successor is the goal, stop the search
+					//std::cout << "22. updatepredecessor" << std::endl;
+					updateStateAD(predecessors[i]);
 				}
 			}
+		
+			//14. while loop
+			//minkey = new AStarPlannerNode;
+			for (int j = 0; j < open_list.size(); j++) {
+				if (j == 0) {
+					minkey = open_list[0];
+					minkeyPosition = 0;
+				}
+				if (KeyAlessthanB(open_list[j], minkey)) {
+					minkey = open_list[j];
+					minkeyPosition = j;
+				}
+			}
+			minkey->key = key(minkey);
+			root->key = key(root);
+			//std::cout << "14. root->key[0]: " << root->key[0] << ". root->key[1]" << root->key[1] << std::endl;
+			//std::cout << "14. minkey->key[0]: " << minkey->key[0] << ". minkey->key[1]" << minkey->key[1] << std::endl;
+			//std::cout << "14. the s/minkey is: " << minkey->point << std::endl;
 		}
+		//std::cout << "we are done with computorimprovepath" << std::endl;
 	}
 
 
 	bool AStarPlanner::ADStar(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
-		//pseudocode: http://www.cs.cmu.edu/~ggordon/likhachev-etal.anytime-dstar.pdf
-		//f here is key...
-		//1.g(s_start) = INF
-		root = new AStarPlannerNode(start, 1000000, 0, 0, NULL);
-		//1.rhs(s_start)=INF
-		root->rhs = 1000000;
-		//1.g(s_goal)=INF
-		goalNode = new AStarPlannerNode(goal, 100000, 0, double(0), NULL);
-		//2.rhs(s_goal)=0
-		goalNode->rhs = 0;
-		//2. skip w_0
-		//3. OPEN=CLOSED=INCONS=empty
-		open_list.clear();
-		closed_list.clear();
-		incons_list.clear();
-		//4. insert s_goal into OPEN with key(s_goal)
-		goalNode->key = key(goalNode);
-		open_list.push_back(goalNode);
-		//5.computeorImprovePath()
-		computeShortestPathAD();
-		//6.publish current w-suboptimal solution
-		agent_path = trace(goalNode);
-
+		
+		if (edgeCostChanges == 0) {
+			//pseudocode: http://www.cs.cmu.edu/~ggordon/likhachev-etal.anytime-dstar.pdf
+			//f here is key...
+			//1.g(s_start) = INF
+			root = new AStarPlannerNode(start, 1000000, 0, 0, NULL);
+			//1.rhs(s_start)=INF
+			root->rhs = 1000000;
+			//1.g(s_goal)=INF
+			goalNode = new AStarPlannerNode(goal, 100000, 0, double(0), NULL);
+			//2.rhs(s_goal)=0
+			goalNode->rhs = 0;
+			//2. skip w_0
+			//3. OPEN=CLOSED=INCONS=empty
+			open_list.clear();
+			closed_list.clear();
+			incons_list.clear();
+			//4. insert s_goal into OPEN with key(s_goal)
+			goalNode->key = key(goalNode);
+			std::cout << "goalNode->g: " << goalNode->g << std::endl;
+			std::cout << "goalNode->rhs: " << goalNode->rhs << std::endl;
+			std::cout << "goalNode->h(s_start,goal): " << euclidean_distance(root->point,goalNode->point) << std::endl;
+			std::cout << "goalNode->key[0]: " << goalNode->key[0] << ". goalNode->key[1]: " << goalNode->key[1] << std::endl;
+			open_list.push_back(goalNode);
+			//5.computeorImprovePath()
+			computeShortestPathAD();
+			//6.publish current w-suboptimal solution
+			agent_path = trace(goalNode);
+		}
 		//7. forever
 		while (true) {
 			//8. if changes in edge costs are detected
-
-
+			if (edgeCostChanges == 1) {
+				
+			}
+				
 
 			//12. if significant edge cost changes were observed
 
 
 			//14. else if w>1
-
+			else if (w > 1) {
+				w = w - .5f;
+			}
 
 			//16. move states from INCONS into OPEN
 			for (int i = 0; i < incons_list.size(); i++) {
@@ -739,6 +795,7 @@ namespace SteerLib
 			//21. if w=1
 			if (w == 1) {
 				//22. wait for changes in edge costs
+				return true;
 			}
 		}
 
@@ -751,6 +808,7 @@ namespace SteerLib
 
 
 	bool AStarPlanner::computePath(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
+		gSpatialDatabase = _gSpatialDatabase;
 		int kindOfAStar;
 		std::cout << "enter a kind of A* (0:Weighted A*, 1:ARA*, 2:AD*): " << std::endl;
 		std::cin >> kindOfAStar;
@@ -759,6 +817,7 @@ namespace SteerLib
 		 //w = 10;
 		 w_s = 0;
 		 maxTime = 100000;
+		 edgeCostChanges = 0;
 		 clockMeasure.reset();
 		 clockMeasure.updateRealTime();
 		 //clockMeasure.advanceSimulationAndUpdateRealTime();
@@ -767,8 +826,22 @@ namespace SteerLib
 			
 			case 1:
 				return ARAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
-			//case 2:
-			//	return ADStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+			case 2:
+				//first assessment
+				ADStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+				//change the path non-drastically
+				//edgeCostChanges = 1;
+				//SpatialDatabaseItemPtr object;
+				//gSpatialDatabase->addObject(object, AxisAlignedBox(4, 8, 0, 1, 0, 2));
+					
+				//ADStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+
+
+				//change the path cost drastically
+				//edgeCostChanges = 2;
+				//ADStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+				return true;
+				//return ADStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
 			default:
 				return weightedAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
 		 }
