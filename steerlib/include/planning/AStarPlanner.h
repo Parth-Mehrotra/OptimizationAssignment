@@ -88,6 +88,8 @@ namespace SteerLib
 			SteerLib::Clock clockMeasure;
 			float maxTime;
 			int edgeCostChanges;
+			std::vector<AStarPlannerNode*> visitedNodes;
+
 
 			std::vector<AStarPlannerNode*> open_list;
 			std::vector<AStarPlannerNode*> closed_list;
@@ -135,6 +137,7 @@ namespace SteerLib
 			int indexWithLeastghARA(std::vector<AStarPlannerNode*> list);
 			bool addNeighborIfGood(AStarPlannerNode* parent, std::vector<AStarPlannerNode*> &neighbors, Util::Point point);
 			std::vector<AStarPlannerNode*> getNeighbors(AStarPlannerNode* a);
+			std::vector<Util::Point> traceARA(AStarPlannerNode* node);
 			std::vector<Util::Point> trace(AStarPlannerNode* node);
 			void printList(std::vector<AStarPlannerNode*> list);
 	};

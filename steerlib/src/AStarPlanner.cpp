@@ -26,7 +26,14 @@
 namespace SteerLib
 {
 	std::ostream& operator<<(std::ostream &strm, const AStarPlannerNode &a) {
-		return strm << "AStarPlannerNode(" << a.point << ", " << a.g << ", " << a.h << ", " << a.f << ")" << "->" << a.parent;
+		std::ostringstream os;
+		if (a.parent != 0) {
+			os << a.parent->point;
+		}
+		else {
+			os << a.parent;
+		}
+		return strm << "AStarPlannerNode(" << a.point << ", " << a.g << ", " << a.h << ", " << a.f << ")" << "->" << os.str();
 	}
 	
 	AStarPlanner::AStarPlanner(){}
@@ -156,6 +163,42 @@ namespace SteerLib
 		return neighbors;
 	}
 
+	std::vector<Util::Point> AStarPlanner::traceARA(AStarPlannerNode* node) {
+		std::cout << "begin trace:---------------------" << std::endl;
+		std::vector<Util::Point> trace;
+		AStarPlannerNode* temp = node;
+		while (temp != goalNode) {
+			std::cout << "looking at: "<<temp->point << "with f:" <<temp->f << std::endl;
+			std::cout << "while temp!=goalNode" << std::endl;
+			trace.push_back(temp->point);
+			std::vector<AStarPlannerNode*> successors = getNeighbors(temp);
+			std::cout << "get successors" << std::endl;
+			AStarPlannerNode* minSuccessor = node;
+			int minSuccessorF = 1000000;
+			// generate q's 8 successors and set their parents to q
+			for (int i = 0; i < successors.size(); i++) {
+				//find that successor in the visitedlist
+				for (int j = 0; j < visitedNodes.size(); j++) {
+					// if a node with the same position as successor is in the CLOSED list, we have visited it before
+					if (visitedNodes[j]->point == successors[i]->point) {
+						successors[i]->f = visitedNodes[j]->f;
+					}
+				}
+				std::cout << "looking at SUCCESSOR: " << successors[i]->point << "with f:" << successors[i]->f << std::endl;
+				if (successors[i]->f < minSuccessorF) {
+					minSuccessor = successors[i];
+					minSuccessorF = successors[i]->f;
+				}
+			}
+			temp = minSuccessor;
+			std::cout << "looking at minTEMP: " << temp->point << "with f:" << temp->f << std::endl;
+		}
+		trace.push_back(temp->point);
+
+		std::cout << "trace:---------------------" << trace << std::endl;
+		return trace;
+	}
+
 	std::vector<Util::Point> AStarPlanner::trace(AStarPlannerNode* node) {
 		std::vector<Util::Point> trace;
 		AStarPlannerNode* temp = node;
@@ -172,7 +215,7 @@ namespace SteerLib
 			//traceTemp[trace.size() - 1 - i] = trace[i];
 			traceTemp.push_back(trace[trace.size() - 1 - i]);
 		}
-		std::cout << "trace:---------------------" << traceTemp << std::endl;
+		//std::cout << "trace:---------------------" << traceTemp << std::endl;
 		return traceTemp;
 	}
 
@@ -266,83 +309,109 @@ namespace SteerLib
 
 
 	void AStarPlanner::improvePath() {
-		
+		//std::cout << "we are visited list:------------------------ " << std::endl;
+		//printList(visitedNodes);
+		//std::cout << "we are visited list:------------------------ " << std::endl;
 		
 		//2. minimum of fvalue of s of all s
 		int indexOfS = indexWithLeastfValueARA(open_list,w);
 		AStarPlannerNode* s= open_list[indexOfS];
-		
+
+		//if not visited before, push s back
+		bool skip = false;
+		for (int j = 0; j < visitedNodes.size(); j++) {
+			if (visitedNodes[j]->point == s->point) {
+				skip = true;
+			}
+		}
+		if (!skip) {
+			visitedNodes.push_back(s);
+		}
 		//temp print
-		
+		//if (s->point == Point(-6, 0, -1)) {
+		//	std::cout << "we will look at the start point (6,-1)" << std::endl;
+		//}
+
 		while (goalNode->f > s->f) {
 			
-			//3
+			//3. remove s with the smalles fvalue(s) from OPEN
 			open_list.erase(open_list.begin() + indexOfS);
-			//4
+			//4. CLOSED = CLOSEDu{s}
 			closed_list.push_back(s);
 			
-
-			//5
+			//5. for each successor s' of s
 			std::vector<AStarPlannerNode*> successors = getNeighbors(s);
 			// generate q's 8 successors and set their parents to q
 			
 			for (int i = 0; i < successors.size(); i++) {
 				AStarPlannerNode* s_s = successors[i];
+				
 				if (s_s->point == goalNode->point) {
 					s_s = goalNode;
-					
-					
 				}
-				
 				
 				//std::cout << "s_s: " <<s_s->point<< std::endl;
-				bool skip = false;
 				//6. if s' was not visited before then...
-				//if not in closed list
-				for (int j = 0; j < closed_list.size(); j++) {
-					// if a node with the same position as successor is in the CLOSED list, we have visited it before
-					if (closed_list[j]->point == s_s->point) {
-						skip = true;
-					}
-				}
-				//if not in open list
-				for (int j = 0; j < open_list.size(); j++) {
-					// if a node with the same position as successor is in the CLOSED list, we have visited it before
-					if (open_list[j]->point == s_s->point) {
-						skip = true;
-					}
-				}
-				//if not in inconsistent list
-				for (int j = 0; j < incons_list.size(); j++) {
-					// if a node with the same position as successor is in the CLOSED list, we have visited it before
-					if (incons_list[j]->point == s_s->point) {
+
+				//temp print
+			//	if (s_s->point == Point(-6, 0, -2)) {
+				//	std::cout << "we will look at the point (6,-2) with parent: " << *s << std::endl;
+				//	//std::cout << "also the g at (6,-2) currently is: " << s_s->g << std::endl;
+				//	std::cout << "also the (6,-2) currently is: " << *s_s << std::endl;
+			//	}
+
+
+				skip = false;
+				for (int j = 0; j < visitedNodes.size(); j++) {
+					// if a node with the same position as successor is in the visitedNodes list, we have visited it before
+					if (visitedNodes[j]->point == s_s->point) {	
+						s_s = visitedNodes[j];
+						
+					//	if (s_s->point == Point(-6, 0, -2)) {
+						//	std::cout << "(6,-2) was visited before. parent: " << *s << std::endl;
+							//std::cout << "also the g at (6,-2) currently is: " << s_s->g << std::endl;
+						//	std::cout << "(6,-2) was visited before currently is: " << *s_s << std::endl;
+						//}
 						skip = true;
 					}
 				}
 
+				//std::cout << "we are visited list after root: " << std::endl;
+				//printList(visitedNodes);
+
 				//otherwise, add the node to the open list
 				if (!skip) {
+					visitedNodes.push_back(s_s);
+					//temp print
+					//if (s_s->point == Point(7, 0, 6)) {
+					//	std::cout << "(7,0,6)'s g has to be updated" << std::endl;
+					//}
 					//7. g(s')=inf
-					if (s_s->point == goalNode->point) {
-						goalNode->g = 100000;
-						goalNode->parent = s;
+					
 						s_s->g = 100000;
-						s_s->parent = s;
-					}
-					else {
-						s_s->g = 100000;
-						s_s->parent = s;
-					}
-				
+						s_s->h= euclidean_distance(s_s->point, goalNode->point);
+						s_s->f = s_s->g + w*s_s->h;
+						//s_s->parent = s;
+					
 				}
-				//8
+				//8. if g(s')>g(s)+c(s,s')
 				if (s_s->g > s->g + euclidean_distance(s->point, s_s->point)) {
 					if (s_s->point == goalNode->point) {
 						goalNode->g=s->g + euclidean_distance(s->point, s_s->point);
 					}
 					s_s->g = s->g + euclidean_distance(s->point, s_s->point);
+					s_s->h = euclidean_distance(s_s->point, goalNode->point);
+					s_s->f = s_s->g + w*s_s->h;
+					s_s->parent = s;
+					//if (s_s->point == Point(-6, 0, -2)) {
+					//	std::cout << "(6,-2) was updated. parent: " << *s << std::endl;
+					//	//std::cout << "also the g at (6,-2) currently is: " << s_s->g << std::endl;
+					//	std::cout << "(6,-2): " << *s_s << std::endl;
+					//}
+					
 					skip = false;
 					
+					//10. if(s' is not in CLOSED)
 					for (int j = 0; j < closed_list.size(); j++) {
 						// node is in the list
 						if (closed_list[j]->point == s_s->point) {
@@ -350,6 +419,7 @@ namespace SteerLib
 						}
 					}
 					if (!skip) {
+						//11. insert s' into OPEN with fvalue(s')
 						if (s_s->point == goalNode->point) {
 							goalNode->h = euclidean_distance(s_s->point, goalNode->point);
 							goalNode->f = goalNode->g + w*goalNode->h;
@@ -364,7 +434,7 @@ namespace SteerLib
 						//std::cout << "we put in open list with f: " << s_s->g+w*s_s->h << std::endl;
 					}
 					else {
-						s_s->h = euclidean_distance(s_s->point, goalNode->point);
+						//s_s->h = euclidean_distance(s_s->point, goalNode->point);
 						incons_list.push_back(s_s);
 						//std::cout << "we put in incons list " << std::endl;
 					}
@@ -381,7 +451,16 @@ namespace SteerLib
 			else {
 				s = goalNode;
 			}
-
+			bool skip = false;
+			for (int j = 0; j < visitedNodes.size(); j++) {
+				// if a node with the same position as successor is in the CLOSED list, we have visited it before
+				if (visitedNodes[j]->point == s->point) {
+					skip = true;
+				}
+			}
+			if (!skip) {
+				visitedNodes.push_back(s);
+			}
 			
 			
 			//std::cout << "we are printing open list: " << std::endl;
@@ -391,7 +470,6 @@ namespace SteerLib
 			//std::cout << "we are printing incons list: " << std::endl;
 			//printList(incons_list);
 			int x;
-			//std::cin >> x;
 
 		}
 		
@@ -402,17 +480,17 @@ namespace SteerLib
 		
 		
 		//temp print
-		std::cout << "we in improvepath----------------" << std::endl;
-		std::cout << "we are printing open list: " << std::endl;
-		printList(open_list);
-		std::cout << "we are printing close list: " << std::endl;
-		printList(closed_list);
-		std::cout << "we are printing incons list: " << std::endl;
-		printList(incons_list);
+		//std::cout << "we in improvepath----------------" << std::endl;
+		//std::cout << "we are printing open list: " << std::endl;
+		//printList(open_list);
+		//std::cout << "we are printing close list: " << std::endl;
+		//printList(closed_list);
+		//std::cout << "we are printing incons list: " << std::endl;
+		//printList(incons_list);
 		
 		//open_list.push_back(temp);
 		int y;
-		std::cin >> y;
+		//std::cin >> y;
 	}
 	
 	bool AStarPlanner::ARAStar(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
@@ -425,9 +503,14 @@ namespace SteerLib
 			open_list.clear();
 			closed_list.clear();
 			incons_list.clear();
+			//visitedNodes exploration
+			visitedNodes.clear();
 
 			//3 insert s_start into OPEN with fvalue(s_start)
 			open_list.push_back(root);
+			//visitedNodes exploration
+			visitedNodes.push_back(root);
+			visitedNodes.push_back(goalNode);
 
 			//4 ImprovePath();
 			improvePath();
@@ -468,16 +551,17 @@ namespace SteerLib
 			//6. public suboptimal solution
 			agent_path = trace(goalNode);
 
+
 			std::cout << " w_s: " << w_s << std::endl;
 			clockMeasure.updateRealTime();
 			//return true;
 			std::cout << " time: " << clockMeasure.getCurrentRealTime() << std::endl;
 			int x;
-			std::cin >> x;
+			//std::cin >> x;
 		//7. while w_s>1...
 		while (w_s > 1&& clockMeasure.getCurrentRealTime()<maxTime) {
 			//8. decrease w.
-			w = w_s - .05f;
+			w = w - .05f;//w_s - .05f; //w - .05f;
 			std::cout << " w: " << w << std::endl;
 			if (w < 0) {
 				w = 0;
@@ -488,7 +572,7 @@ namespace SteerLib
 				open_list.push_back(incons_list[i]);
 			}
 			incons_list.clear();
-			//10. nonexistant
+			//10. Update the priorities for all s in OPEN according to fvalue(s)
 			for (int i = 0; i < open_list.size(); i++) {
 				open_list[i]->f = open_list[i]->g + w*open_list[i]->h;
 			}
@@ -530,15 +614,14 @@ namespace SteerLib
 			}
 			//public current suboptimal solution
 			
-			//14.
+			//14. public current suboptimal solution
 			agent_path = trace(goalNode);
 
-			std::cout << " w_s: " << w_s << std::endl;
+			//std::cout << " w_s: " << w_s << std::endl;
 			
 			clockMeasure.updateRealTime();
 			std::cout << " time: " << clockMeasure.getCurrentRealTime() << std::endl;
 			int x;
-			std::cin >> x;
 		}
 
 		return true;
@@ -764,6 +847,7 @@ namespace SteerLib
 			computeShortestPathAD();
 			//6.publish current w-suboptimal solution
 			agent_path = trace(goalNode);
+			return true;
 		}
 		//7. forever
 		while (true) {
@@ -820,15 +904,18 @@ namespace SteerLib
 		std::cin >> w;
 		 //w = 10;
 		 w_s = 0;
-		 maxTime = 100000;
+		 maxTime = 10;
 		 edgeCostChanges = 0;
-		 clockMeasure.reset();
-		 clockMeasure.updateRealTime();
+		
 		 //clockMeasure.advanceSimulationAndUpdateRealTime();
 		 
 		 switch (kindOfAStar) {
 			
 			case 1:
+				std::cout << "enter a time: " << std::endl;
+				std::cin >> maxTime;
+				clockMeasure.reset();
+				clockMeasure.updateRealTime();
 				return ARAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
 			case 2:
 				//first assessment
