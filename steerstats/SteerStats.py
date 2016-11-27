@@ -72,9 +72,9 @@ class SteerStats():
             if method[0] == objective:
                 return method[1]
                
-	def getBoundPenaltyFunc(self, objective):
-		import inspect
-		import optimization
+    def getBoundPenaltyFunc(self, objective):
+        import inspect
+        import optimization
         methods = inspect.getmembers(optimization, predicate=inspect.ismethod)
 # print methods
         for method in methods:
@@ -610,6 +610,60 @@ class SteerStats():
         #    fun_value = 0
         print "*** evaluation result for agent flow: " + str(fun_value * -1.0)
         return (fun_value * -1.0)
+
+    def harshObjective(self, ai_params, results=None, options=None):
+        subpars = list()
+        if results == None:
+            if self._options.subspaceParams == '':
+                for param_name,param_value in zip(self._ai_param_names,ai_params):
+                    if point_pattern.match(param_name) == None:
+                        continue
+                    subpars.append(param_value)
+                options.subspaceParams = subpars
+            results = self.RunStats(ai_params,options=options)
+        
+        num_scenarios = 0 # do not rely on experiment completing the scenarios it is supposed to
+        time_sum_tmp = 0
+        agent_flow_total=0.0        
+        fps = 20.0 # Configureation.getFPS()
+        u=1.0
+
+        for result in results:
+            num_scenarios = num_scenarios + 1
+            # print "Time enableds" + str(result.get_agent_time_enableds())
+            # print "Min time enabled" + str(min(result.get_agent_time_enableds()))
+            num_agents=0
+            for (time_enabled, complete) in zip(result.get_agent_time_enableds(), result.get_agent_completes()):
+                # print "complete: " + str(complete) +" time_enabled " + str(time_enabled)
+                num_agents+=1  
+                if complete == "1" or complete == 1:
+                    # time_sum_tmp = time_sum_tmp + ((float(time_enabled) - float(min_time)))
+                    time_sum_tmp = time_sum_tmp + ((float(time_enabled)))
+                else:
+                    # worst time possible
+                    time_sum_tmp = time_sum_tmp + ((float(self._options.numFrames) / fps)*u)*100
+                    
+            #Adding the penalty time for the Agents not completed which is (TOTAL_AGENTS - AGENTS_COMPLETED) * AVG_COMPUTED_TIME_FOR_2000_FRAMES
+            time_avg = time_sum_tmp / float(result.get_num_agents())
+            # agent_flow =  time_sum / float(num_agents_completed)
+            num_agents_completed = sum(result.get_agent_completes())
+            # sim_crash_penalty = (result.get_num_agents() - num_agents) * ((float(self._options.numFrames) / fps)*u)
+            agent_flow =  (float(num_agents_completed) / time_avg)
+            agent_flow_total = agent_flow_total + agent_flow
+            time_sum_tmp=0.0
+        
+            
+        # print "Agent flow time sum: " + str( agent_flow_total )
+        
+        # Helps penalize the system if for some reason the system crashes.
+        
+        # scenario_crash_penalty = ( float(self._options.numScenarios) - num_scenarios) * 100.0 * ((float(self._options.numFrames) / fps)*u)
+        fun_value = ((agent_flow_total) /float(self._options.numScenarios))
+        #if fun_value < 0:
+        #    fun_value = 0
+        print "*** evaluation result for agent flow: " + str(fun_value * -1.0)
+        return (fun_value * -1.0)
+        
     
     def simulationTimeMetricGlobal(self, ai_params, results=None, options=None):
         if results == None:
@@ -873,12 +927,12 @@ class SteerStats():
         
         print "The length of the results is: " + str(len(results))
         for result in results:
-			if all(result.get_agent_distance_traveleds()) and not all(result.get_agent_completes()):
-				print "scenario number: " + str(scenario_num)
-        		
-			scenario_num = scenario_num + 1 
-			sum_agent_completes = sum_agent_completes + sum(result.get_agent_completes())
-			total_num_agents = total_num_agents + (result.get_num_agents())  
+            if all(result.get_agent_distance_traveleds()) and not all(result.get_agent_completes()):
+                print "scenario number: " + str(scenario_num)
+                
+            scenario_num = scenario_num + 1 
+            sum_agent_completes = sum_agent_completes + sum(result.get_agent_completes())
+            total_num_agents = total_num_agents + (result.get_num_agents())  
         
             
         # options number of scenarios is used encase of simulation problems
@@ -1102,8 +1156,8 @@ class SteerStats():
         # sys.exit()
         metricValues = {}
         if weights is None:
-			weights = options.config.getMetricWeights()
-			# print "Weights " + str(weights)
+            weights = options.config.getMetricWeights()
+            # print "Weights " + str(weights)
         
         dataFile = open(self._options.cmaFilePrefix+"evalData.dat", "a")
         # if its weight is 0 then this value does not matter, otherwise it will be updated
