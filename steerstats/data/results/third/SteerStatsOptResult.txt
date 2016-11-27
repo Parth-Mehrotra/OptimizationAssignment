@@ -1,0 +1,9 @@
+best evaluated set of parameters, X: [ 0.05549183 -0.01445525  2.41453109 -0.55954924  0.11810122  0.3624703 ]
+best evaluated f for parameters, X: -2.56481158785
+evaluations till best X: 159
+geno of x: [ 0.02642468 -0.00688345  1.14977671 -0.26645202  0.05623868  0.1726049 ]
+total evaluations: 209
+total iterations f: 23
+best mean solution for normal distribution: [-0.21407696 -0.23534699  3.7097724  -0.80922311 -0.0244793   1.35095073]
+std deviation of parameters: [ 0.67573225  0.48858597  0.55301378  0.38707694  0.59614311  0.58859549]
+reason for stopping optimization: {'maxfevals': 200}
