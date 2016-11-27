@@ -212,8 +212,8 @@ Options specified by the command line will override options in this configuratio
             <numFrames type="int">3000</numFrames>
             <!-- <optimizeWith type="string">bruteForce</optimizeWith> -->
             <!-- <optimizeWith type="string">CMA-ES</optimizeWith>-->
-            <paramFile type="file">xml/icra-subspaces/hallway-two-way-4pillar-middleOptimizationRegion.xml</paramFile>
-            <commandLine type="exists"/>
+            <paramFile type="file">xml/optimized/pillars/5.xml</paramFile>
+            <!--<commandLine type="exists"/>-->
             <availableProcesses type="int">4</availableProcesses>
             <!-- <noSimulation type="exists"/> -->
             <!-- This will atempt to match a function in SteerStats class and use that function for the objective -->
