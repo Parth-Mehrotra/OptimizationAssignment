@@ -51,6 +51,7 @@ solution "steersuite"
 		targetdir ( "bin" )
 
 	configuration { "linux" }
+		buildoptions { "-std=c++11" }
 		linkoptions { 
 			-- "-stdlib=libc++" ,
 			"-Wl,-rpath," .. path.getabsolute("lib")
@@ -96,7 +97,7 @@ project "steersim"
 	}
 
 	targetdir "bin"
-	buildoptions("-std=c++0x -ggdb" )	
+	buildoptions("-std=c++11x -ggdb" )	
 
 	-- linux library cflags and libs
 	configuration { "linux", "gmake" }

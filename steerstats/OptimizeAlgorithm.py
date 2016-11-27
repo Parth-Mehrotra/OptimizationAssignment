@@ -751,15 +751,21 @@ def OptimizeWithBruteForce():
 if __name__ == "__main__":
     
     options = getOptions()
+    print options
     if options.optimizationAlgorithm == "CMA-ES":
+	print("CMA-ES")
         OptimizeWithCMA()
     elif options.optimizationAlgorithm == "midaco":
+	print("midaco")
         OptimizeWithMIDACO()
     elif options.optimizationAlgorithm == "bruteForce":
+	print("bruteForce")
         OptimizeWithBruteForce()
     elif options.optimizationAlgorithm == "CMA-ES-MixInt":
+	print("CMA-ES-MixInt")
         OptimizeWithCMA_ES_MixedInt()
     elif options.optimizationAlgorithm == "NSGA2":
+	print("NSGA2")
         if options.multiObjRestartFile == "":
             pop, stats = multiOptimizeNSGA2()
         else:

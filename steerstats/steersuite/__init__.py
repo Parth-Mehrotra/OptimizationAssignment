@@ -21,7 +21,7 @@ elif _system == 'Windows':
     print '======' + libraryLocation
     lib = ct.cdll.LoadLibrary(libraryLocation)
 else: # Linux
-    libraryLocation=libraryDirectory+'steersimlib.so'
+    libraryLocation='../build/lib/libsteersimlib.so'
     lib = ct.cdll.LoadLibrary(libraryLocation)
        
 def Init_SteerSim(argc, argv):

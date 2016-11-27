@@ -11,7 +11,7 @@ For this we need to somehow include the constraint that we don't want the pillar
 to intersect. -->
 	 <ai_config name="hallway-two-way-2pillar" >
 		<parameter type="float" name="p1_x">
-			<min type="float">-3</min>
+			<min type="float">-13</min>
 			<max type="float">4</max>
 			<original type="float">-1.5</original>
 			<discretization type="float">20</discretization>

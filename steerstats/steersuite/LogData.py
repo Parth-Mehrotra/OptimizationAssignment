@@ -9,7 +9,7 @@ if _system == 'Darwin':
 elif _system == 'Windows':
     lib = ct.cdll.LoadLibrary(libraryDirectory+'util.dll')
 else: # Linux
-	lib = ct.cdll.LoadLibrary(libraryDirectory+'libutil.so')
+	lib = ct.cdll.LoadLibrary('../build/lib/libutil.so')
 
 (_Integer, _Float, _LongLong, _String)  = (0, 1, 2, 3)
 """

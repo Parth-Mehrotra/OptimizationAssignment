@@ -3732,8 +3732,9 @@ class CMADataLogger(BaseDataLogger):  # might become a dict at some point
                         strseedtime + 
                         # strftime("%Y/%m/%d %H:%M:%S", localtime()) + # just asctime() would do
                         '\n')
-        except (IOError, OSError):
-            print('could not open file ' + fn)
+        except (IOError, OSError) as e:
+            print('could not open file 1' + fn)
+	    print(e)
 
         fn = self.name_prefix + 'axlen.dat'
         try: 
@@ -3745,7 +3746,7 @@ class CMADataLogger(BaseDataLogger):  # might become a dict at some point
                     '\n')
             f.close()
         except (IOError, OSError):
-            print('could not open file ' + fn)
+            print('could not open file 2' + fn)
         finally:
             f.close()
         fn = self.name_prefix + 'stddev.dat'
@@ -3757,7 +3758,7 @@ class CMADataLogger(BaseDataLogger):  # might become a dict at some point
                     '\n')
             f.close()
         except (IOError, OSError):
-            print('could not open file ' + fn)
+            print('could not open file 3' + fn)
         finally:
             f.close()
 
@@ -4496,7 +4497,7 @@ class DEAPCMADataLogger(BaseDataLogger):  # might become a dict at some point
                         # strftime("%Y/%m/%d %H:%M:%S", localtime()) + # just asctime() would do
                         '\n')
         except (IOError, OSError):
-            print('could not open file ' + fn)
+            print('could not open file 4' + fn)
 
         fn = self.name_prefix + 'axlen.dat'
         try: 
@@ -4508,7 +4509,7 @@ class DEAPCMADataLogger(BaseDataLogger):  # might become a dict at some point
                     '\n')
             f.close()
         except (IOError, OSError):
-            print('could not open file ' + fn)
+            print('could not open file 5' + fn)
         finally:
             f.close()
         fn = self.name_prefix + 'stddev.dat'
@@ -4520,7 +4521,7 @@ class DEAPCMADataLogger(BaseDataLogger):  # might become a dict at some point
                     '\n')
             f.close()
         except (IOError, OSError):
-            print('could not open file ' + fn)
+            print('could not open file 6' + fn)
         finally:
             f.close()
 

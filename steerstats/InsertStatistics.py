@@ -213,7 +213,7 @@ def InsertStatistics(params, configFilePath, dataQueue=None):
        
         try:
             print '============' + benchmarkLog
-            benchmarkLogFile = open(benchmarkLog,"r")
+            benchmarkLogFile = open(benchmarkLog,"r+")
             rand_seed = benchmarkLogFile.readline() #save / remove random seed
             lparser = LogParser()
             logData = lparser.parseLog(benchmarkLogFile)
@@ -221,7 +221,7 @@ def InsertStatistics(params, configFilePath, dataQueue=None):
             print '============' + algorithmLogFileName
             # pr = cProfile.Profile()
             # pr.enable()
-            algorithmLogFile = open(algorithmLogFileName, "r")
+            algorithmLogFile = open(algorithmLogFileName, "r+")
             algorithmData = lparser.parseLog(algorithmLogFile)
         except IOError:
             print "Are you sure you have compiled SteerSuite?"
