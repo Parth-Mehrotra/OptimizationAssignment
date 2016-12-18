@@ -1,0 +1,162 @@
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/util/Geometry.h: In function ‘float Util::computeBoxCirclePenetration2D(float, float, float, float, const Util::Point&, float)’:
+../../steerlib/include/util/Geometry.h:482:9: warning: variable ‘radiusSquared’ set but not used [-Wunused-but-set-variable]
+   float radiusSquared;
+         ^
+In file included from ../../steerlib/include/util/XMLParserPrivate.h:15:0,
+                 from ../../steerlib/include/util/XMLParser.h:14,
+                 from ../../steerlib/include/util/Misc.h:25,
+                 from ../../steerlib/include/Util.h:22,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../external/tinyxml/ticpp.h: At global scope:
+../../external/tinyxml/ticpp.h:988:8: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+   std::auto_ptr< Node > Clone() const;
+        ^
+In file included from /usr/include/c++/5/memory:81:0,
+                 from ../../external/tinyxml/ticpp.h:53,
+                 from ../../steerlib/include/util/XMLParserPrivate.h:15,
+                 from ../../steerlib/include/util/XMLParser.h:14,
+                 from ../../steerlib/include/util/Misc.h:25,
+                 from ../../steerlib/include/Util.h:22,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+/usr/include/c++/5/bits/unique_ptr.h:49:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^
+../../steerlib/src/AStarPlanner.cpp: In member function ‘int SteerLib::AStarPlanner::indexWithLeastF(std::vector<SteerLib::AStarPlannerNode>)’:
+../../steerlib/src/AStarPlanner.cpp:81:21: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for (int i = 0; i < list.size(); i++) {
+                     ^
+../../steerlib/src/AStarPlanner.cpp: In member function ‘std::vector<SteerLib::AStarPlannerNode> SteerLib::AStarPlanner::getNeighbors(SteerLib::AStarPlannerNode&)’:
+../../steerlib/src/AStarPlanner.cpp:122:2: warning: no return statement in function returning non-void [-Wreturn-type]
+  }
+  ^
+../../steerlib/src/AStarPlanner.cpp: In member function ‘bool SteerLib::AStarPlanner::computePath(std::vector<Util::Point>&, Util::Point, Util::Point, SteerLib::SpatialDataBaseInterface*, bool)’:
+../../steerlib/src/AStarPlanner.cpp:159:22: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for (int i = 0; i < successors.size(); i++) {
+                      ^
+../../steerlib/src/AStarPlanner.cpp:175:23: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     for (int j = 0; j < open_list.size(); j++) {
+                       ^
+../../steerlib/src/AStarPlanner.cpp:182:23: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     for (int j = 0; j < closed_list.size(); j++) {
+                       ^
+In file included from ../../steerlib/include/testcaseio/TestCaseIOPrivate.h:21:0,
+                 from ../../steerlib/include/testcaseio/TestCaseIO.h:20,
+                 from ../../steerlib/include/SteerLib.h:26,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h: At global scope:
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:71:23: warning: inline function ‘virtual void SteerLib::SpatialDataBaseInterface::getGridCoordinatesFromIndex(unsigned int, unsigned int&, unsigned int&)’ used but never defined
+   virtual inline void getGridCoordinatesFromIndex(unsigned int cellIndex, unsigned int &xIndex, unsigned int & zIndex) = 0;
+                       ^
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:57:31: warning: inline function ‘virtual unsigned int SteerLib::SpatialDataBaseInterface::getNumCellsX()’ used but never defined
+   virtual inline unsigned int getNumCellsX() = 0;
+                               ^
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:59:31: warning: inline function ‘virtual unsigned int SteerLib::SpatialDataBaseInterface::getNumCellsZ()’ used but never defined
+   virtual inline unsigned int getNumCellsZ() = 0;
+                               ^
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:73:31: warning: inline function ‘virtual unsigned int SteerLib::SpatialDataBaseInterface::getCellIndexFromGridCoords(unsigned int, unsigned int)’ used but never defined
+   virtual inline unsigned int getCellIndexFromGridCoords(unsigned int x, unsigned int z) = 0;
+                               ^
+In file included from ../../steerlib/include/testcaseio/TestCaseIOPrivate.h:21:0,
+                 from ../../steerlib/include/testcaseio/TestCaseIO.h:20,
+                 from ../../steerlib/include/SteerLib.h:26,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:95:24: warning: inline function ‘virtual float SteerLib::SpatialDataBaseInterface::getTraversalCost(unsigned int)’ used but never defined
+   virtual inline float getTraversalCost( unsigned int cellIndex ) = 0;
+                        ^
+In file included from ../../steerlib/include/testcaseio/TestCaseIOPrivate.h:21:0,
+                 from ../../steerlib/include/testcaseio/TestCaseIO.h:20,
+                 from ../../steerlib/include/SteerLib.h:26,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:69:23: warning: inline function ‘virtual void SteerLib::SpatialDataBaseInterface::getLocationFromIndex(unsigned int, Util::Point&)’ used but never defined
+   virtual inline void getLocationFromIndex( unsigned int cellIndex, Util::Point & result ) = 0;
+                       ^
+In file included from ../../steerlib/include/testcaseio/TestCaseIOPrivate.h:21:0,
+                 from ../../steerlib/include/testcaseio/TestCaseIO.h:20,
+                 from ../../steerlib/include/SteerLib.h:26,
+                 from ../../steerlib/include/planning/AStarPlanner.h:15,
+                 from ../../steerlib/src/AStarPlanner.cpp:16:
+../../steerlib/include/interfaces/SpatialDataBaseInterface.h:93:23: warning: inline function ‘virtual bool SteerLib::SpatialDataBaseInterface::hasAnyItems(unsigned int, unsigned int)’ used but never defined
+   virtual inline bool hasAnyItems( unsigned int x, unsigned int z ) = 0;
+                       ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../searchAI/src/SearchAIModule.cpp:10:
+../../steerlib/include/util/Geometry.h: In function ‘float Util::computeBoxCirclePenetration2D(float, float, float, float, const Util::Point&, float)’:
+../../steerlib/include/util/Geometry.h:482:9: warning: variable ‘radiusSquared’ set but not used [-Wunused-but-set-variable]
+   float radiusSquared;
+         ^
+In file included from ../../steerlib/include/util/XMLParserPrivate.h:15:0,
+                 from ../../steerlib/include/util/XMLParser.h:14,
+                 from ../../steerlib/include/util/Misc.h:25,
+                 from ../../steerlib/include/Util.h:22,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../searchAI/src/SearchAIModule.cpp:10:
+../../external/tinyxml/ticpp.h: At global scope:
+../../external/tinyxml/ticpp.h:988:8: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+   std::auto_ptr< Node > Clone() const;
+        ^
+In file included from /usr/include/c++/5/memory:81:0,
+                 from ../../external/tinyxml/ticpp.h:53,
+                 from ../../steerlib/include/util/XMLParserPrivate.h:15,
+                 from ../../steerlib/include/util/XMLParser.h:14,
+                 from ../../steerlib/include/util/Misc.h:25,
+                 from ../../steerlib/include/Util.h:22,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../searchAI/src/SearchAIModule.cpp:10:
+/usr/include/c++/5/bits/unique_ptr.h:49:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^
+../../searchAI/src/SearchAIModule.cpp: In member function ‘virtual void SearchAIModule::preprocessSimulation()’:
+../../searchAI/src/SearchAIModule.cpp:142:18: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+  for (int i =0; i<_agents.size(); ++i)
+                  ^
+In file included from ../../steerlib/include/util/Curve.h:15:0,
+                 from ../../steerlib/include/Util.h:13,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../searchAI/src/SearchAgent.cpp:6:
+../../steerlib/include/util/Geometry.h: In function ‘float Util::computeBoxCirclePenetration2D(float, float, float, float, const Util::Point&, float)’:
+../../steerlib/include/util/Geometry.h:482:9: warning: variable ‘radiusSquared’ set but not used [-Wunused-but-set-variable]
+   float radiusSquared;
+         ^
+In file included from ../../steerlib/include/util/XMLParserPrivate.h:15:0,
+                 from ../../steerlib/include/util/XMLParser.h:14,
+                 from ../../steerlib/include/util/Misc.h:25,
+                 from ../../steerlib/include/Util.h:22,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../searchAI/src/SearchAgent.cpp:6:
+../../external/tinyxml/ticpp.h: At global scope:
+../../external/tinyxml/ticpp.h:988:8: warning: ‘template<class> class std::auto_ptr’ is deprecated [-Wdeprecated-declarations]
+   std::auto_ptr< Node > Clone() const;
+        ^
+In file included from /usr/include/c++/5/memory:81:0,
+                 from ../../external/tinyxml/ticpp.h:53,
+                 from ../../steerlib/include/util/XMLParserPrivate.h:15,
+                 from ../../steerlib/include/util/XMLParser.h:14,
+                 from ../../steerlib/include/util/Misc.h:25,
+                 from ../../steerlib/include/Util.h:22,
+                 from ../../steerlib/include/SteerLib.h:22,
+                 from ../../searchAI/src/SearchAgent.cpp:6:
+/usr/include/c++/5/bits/unique_ptr.h:49:28: note: declared here
+   template<typename> class auto_ptr;
+                            ^
+../../searchAI/src/SearchAgent.cpp: In member function ‘void SearchAgent::computePlan()’:
+../../searchAI/src/SearchAgent.cpp:105:22: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for (int i = 0; i < __path.size(); ++i)
+                      ^
+../../searchAI/src/SearchAgent.cpp: In member function ‘virtual void SearchAgent::draw()’:
+../../searchAI/src/SearchAgent.cpp:172:19: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+   for(int i = 1; i<__path.size(); ++i)
+                   ^
