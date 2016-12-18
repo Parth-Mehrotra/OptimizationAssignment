@@ -26,7 +26,7 @@ ifeq ($(config),debug)
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DDEBUG -DGLFW_BUILD_DLL -D_GLFW_USE_LINUX_JOYSTICKS -D_GLFW_HAS_XRANDR -D_GLFW_HAS_PTHREAD -D_GLFW_HAS_SCHED_YIELD -D_GLFW_HAS_GLXGETPROCADDRESS
   INCLUDES  += -I../../external/glfw/include -I../../external/glfw/include/GL -I../../external/glfw/lib -I../../external/glfw/lib/x11
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -fPIC -std=c++11 -pthread `pkg-config --cflags gl` `pkg-config --cflags glu` -fPIC
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -fPIC -std=c++11 -g -pthread `pkg-config --cflags gl` `pkg-config --cflags glu` -fPIC
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/a5/steersuite-rutgers/build/lib
   LIBS      += -lpthread
@@ -48,7 +48,7 @@ ifeq ($(config),release)
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DNDEBUG -DGLFW_BUILD_DLL -D_GLFW_USE_LINUX_JOYSTICKS -D_GLFW_HAS_XRANDR -D_GLFW_HAS_PTHREAD -D_GLFW_HAS_SCHED_YIELD -D_GLFW_HAS_GLXGETPROCADDRESS
   INCLUDES  += -I../../external/glfw/include -I../../external/glfw/include/GL -I../../external/glfw/lib -I../../external/glfw/lib/x11
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -fPIC -std=c++11 -pthread `pkg-config --cflags gl` `pkg-config --cflags glu` -fPIC
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -fPIC -std=c++11 -g -pthread `pkg-config --cflags gl` `pkg-config --cflags glu` -fPIC
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/a5/steersuite-rutgers/build/lib
   LIBS      += -lpthread

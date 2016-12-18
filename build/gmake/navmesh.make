@@ -26,7 +26,7 @@ ifeq ($(config),debug)
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DDEBUG
   INCLUDES  += -I../../steerlib/include -I../../navmeshBuilder/include -I../../external/recastnavigation/Recast/Include -I../../external/recastnavigation/DebugUtils/Include -I../../external/recastnavigation/Detour/Include -I../../external/recastnavigation/DetourTileCache/Include -I../../external/recastnavigation/DetourCrowd/Include -I../../steersimlib/include -I../../external -I../../util/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -fPIC -std=c++11 -std=c++0x -ggdb -fPIC
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -fPIC -std=c++11 -g -std=c++0x -ggdb -fPIC
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/a5/steersuite-rutgers/build/lib -L../lib
   LIBS      += -lsteerlib -lsteersimlib -lutil -lRecast -lDebugUtils -lDetour -lDetourCrowd
@@ -48,7 +48,7 @@ ifeq ($(config),release)
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DNDEBUG
   INCLUDES  += -I../../steerlib/include -I../../navmeshBuilder/include -I../../external/recastnavigation/Recast/Include -I../../external/recastnavigation/DebugUtils/Include -I../../external/recastnavigation/Detour/Include -I../../external/recastnavigation/DetourTileCache/Include -I../../external/recastnavigation/DetourCrowd/Include -I../../steersimlib/include -I../../external -I../../util/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -fPIC -std=c++11 -std=c++0x -ggdb -fPIC
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -fPIC -std=c++11 -g -std=c++0x -ggdb -fPIC
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -shared -Wl,-rpath,/home/parthmehrotra/a5/steersuite-rutgers/build/lib -L../lib
   LIBS      += -lsteerlib -lsteersimlib -lutil -lRecast -lDebugUtils -lDetour -lDetourCrowd

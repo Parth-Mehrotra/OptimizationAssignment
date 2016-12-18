@@ -126,7 +126,7 @@ void SearchAIModule::initializeSimulation()
 	gPhaseProfilers->predictivePhaseProfiler.reset();
 	gPhaseProfilers->reactivePhaseProfiler.reset();
 	gPhaseProfilers->steeringPhaseProfiler.reset();
-	std::cout<<"\ninitialize simulation\n";
+	std::cout << "\ninitialize simulation\n" << std::endl;
 
 }
 
@@ -137,11 +137,11 @@ void SearchAIModule::preprocessSimulation()
 		return;
 	else
 		planned_once = false;
-	std::cout<<"\nPreprocess simulation\n";
+	std::cout<<"\nPreprocess simulation\n"<<std::endl;
 	std::vector<SteerLib::AgentInterface*> _agents = gEngine->getAgents();
 	for (int i =0; i<_agents.size(); ++i)
 	{
-		std::cout<<"\nAgent :: "<<i<<"/"<<_agents.size()-1;
+		std::cout<<"\nAgent :: "<<i<<"/"<<_agents.size()-1<<std::endl;
 		((SearchAgent*)_agents[i])->computePlan();
 	}
 }

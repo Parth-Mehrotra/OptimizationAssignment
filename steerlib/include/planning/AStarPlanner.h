@@ -32,29 +32,33 @@ namespace SteerLib
 		public:
 			double f;
 			double g;
+			double h;
+			double rhs;
+			std::vector<float> key;
 			Util::Point point;
 			AStarPlannerNode* parent;
-			AStarPlannerNode(Util::Point _point, double _g, double _f, AStarPlannerNode* _parent)
-			{
+			AStarPlannerNode(Util::Point _point, double _g, double _f, double _h, AStarPlannerNode* _parent) {
 				f = _f;
 				point = _point;
 				g = _g;
 				parent = _parent;
+				h = _h;
 			}
-			bool operator<(AStarPlannerNode other) const
-		    {
-		        return this->f < other.f;
-		    }
-		    bool operator>(AStarPlannerNode other) const
-		    {
-		        return this->f > other.f;
-		    }
-		    bool operator==(AStarPlannerNode other) const
-		    {
-		        return ((this->point.x == other.point.x) && (this->point.z == other.point.z));
-		    }
+			bool operator<(AStarPlannerNode other) const {
+				return this->f < other.f;
+			}
+			bool operator>(AStarPlannerNode other) const {
+				return this->f > other.f;
+			}
+			bool operator==(AStarPlannerNode other) const {
+				return ((this->point.x == other.point.x) && (this->point.z == other.point.z));
+			}
 
+			bool operator!=(AStarPlannerNode other) const {
+				return !(*this == other);
+			}
 	};
+
 
 	
 
@@ -77,6 +81,24 @@ namespace SteerLib
 				[Z_GRID-OBSTACLE_CLEARANCE, Z_GRID+OBSTACLE_CLEARANCE]]
 				This function also contains the griddatabase call that gets traversal costs.
 			*/
+
+			float w;
+			float w_s;
+			int placeInCode;
+			SteerLib::Clock clockMeasure;
+			float maxTime;
+			int edgeCostChanges;
+			std::vector<AStarPlannerNode*> visitedNodes;
+
+
+			std::vector<AStarPlannerNode*> open_list;
+			std::vector<AStarPlannerNode*> closed_list;
+			std::vector<AStarPlannerNode*> incons_list;
+			AStarPlannerNode* root;
+			AStarPlannerNode* goalNode;
+
+
+
 			bool canBeTraversed ( int id );
 			/*
 				@function getPointFromGridIndex accepts the grid index as input and returns an Util::Point corresponding to the center of that cell.
@@ -94,10 +116,30 @@ namespace SteerLib
 				_gSpatialDatabase : The pointer to the GridDatabase2D from the agent
 				append_to_path : An optional argument to append to agent_path instead of overwriting it.
 			*/
-
+			bool weightedAStar(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path = false);
+			float fvalue(AStarPlannerNode *s);
+			void improvePath();
+			bool ARAStar(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path = false);
+			
+			
+			std::vector<float> key(AStarPlannerNode *s);
+			void updateStateAD(AStarPlannerNode *s);
+			void computeShortestPathAD();
+			bool KeyAlessthanB(AStarPlannerNode *s, AStarPlannerNode *s2);
+			bool ADStar(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path = false);
 			bool computePath(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path = false);
 		private:
+			double euclidean_distance(Util::Point a, Util::Point b);
+
 			SteerLib::SpatialDataBaseInterface * gSpatialDatabase;
+			int indexWithLeastF(std::vector<AStarPlannerNode*> list);
+			int indexWithLeastfValueARA(std::vector<AStarPlannerNode*> list, float w);
+			int indexWithLeastghARA(std::vector<AStarPlannerNode*> list);
+			bool addNeighborIfGood(AStarPlannerNode* parent, std::vector<AStarPlannerNode*> &neighbors, Util::Point point);
+			std::vector<AStarPlannerNode*> getNeighbors(AStarPlannerNode* a);
+			std::vector<Util::Point> traceARA(AStarPlannerNode* node);
+			std::vector<Util::Point> trace(AStarPlannerNode* node);
+			void printList(std::vector<AStarPlannerNode*> list);
 	};
 
 

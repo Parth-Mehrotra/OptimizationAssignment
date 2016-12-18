@@ -19,10 +19,10 @@
 
 
 /**
- * @brief Social Forces Agent stuff
- *
- *
- */
+* @brief Social Forces Agent stuff
+*
+*
+*/
 
 // #define DRAW_ANNOTATIONS 1
 // #define DRAW_HISTORIES 1
@@ -32,6 +32,19 @@
 class SocialForcesAgent : public SteerLib::AgentInterface
 {
 public:
+
+
+
+	//figure out what type of agent it is if Pursuer/Evade
+	bool isPursuer;
+	bool isGuyToPursue;
+	bool isGuyToEvade;
+	static bool isFollowingLeader;
+
+	size_t pursuerId;
+	size_t guyToEvadeId;
+	size_t guyToPursueId;
+
 	SocialForcesAgent();
 	~SocialForcesAgent();
 	void reset(const SteerLib::AgentInitialConditions & initialConditions, SteerLib::EngineInterface * engineInfo);
@@ -39,13 +52,14 @@ public:
 	void disable();
 	void draw();
 
+	Util::Color color() const { return _color; }
 	bool enabled() const { return _enabled; }
 	Util::Point position() const { return _position; }
 	Util::Vector forward() const { return _forward; }
-	Util::Vector velocity() const {return _velocity; }
+	Util::Vector velocity() const { return _velocity; }
 	float radius() const { return _radius; }
 	const SteerLib::AgentGoalInfo & currentGoal() const { return _goalQueue.front(); }
-	size_t id() const { return id_;}
+	size_t id() const { return id_; }
 	const std::queue<SteerLib::AgentGoalInfo> & agentGoals() const { return _goalQueue; }
 	void addGoal(const SteerLib::AgentGoalInfo & newGoal) { throw Util::GenericException("addGoals() not implemented yet for SocialForcesAgent"); }
 	void clearGoals() { throw Util::GenericException("clearGoals() not implemented yet for SocialForcesAgent"); }
@@ -55,8 +69,8 @@ public:
 	/// The Util namespace helper functions do the job nicely for basic circular agents.
 	//@{
 	bool intersects(const Util::Ray &r, float &t) { return Util::rayIntersectsCircle2D(_position, _radius, r, t); }
-	bool overlaps(const Util::Point & p, float radius) { return Util::circleOverlapsCircle2D( _position, _radius, p, radius); }
-	float computePenetration(const Util::Point & p, float radius) { return Util::computeCircleCirclePenetration2D( _position, _radius, p, radius); }
+	bool overlaps(const Util::Point & p, float radius) { return Util::circleOverlapsCircle2D(_position, _radius, p, radius); }
+	float computePenetration(const Util::Point & p, float radius) { return Util::computeCircleCirclePenetration2D(_position, _radius, p, radius); }
 	//@}
 
 	// bool collidesAtTimeWith(const Util::Point & p1, const Util::Vector & rightSide, float otherAgentRadius, float timeStamp, float footX, float footZ);
@@ -73,8 +87,8 @@ protected:
 
 
 	/**
-		 * \brief   Updates the three-dimensional position and three-dimensional velocity of this agent.
-		 */
+	* \brief   Updates the three-dimensional position and three-dimensional velocity of this agent.
+	*/
 	void update(float timeStamp, float dt, unsigned int frameNumber);
 
 
@@ -95,6 +109,19 @@ private:
 	// bool reachedCurrentWaypoint();
 	// void updateMidTermPath();
 	// bool hasLineOfSightTo(Util::Point point);
+
+	Util::Vector prefferedPursuerForce(float timeStamp, float dt, unsigned int frameNumber);
+
+	Util::Vector mazeSolver(float timeStamp, float dt, unsigned int frameNumber);
+	double point_bound_distance(Util::AxisAlignedBox, Util::Point);
+
+	Util::Vector prefferedFleeForce(float timeStamp, float dt, unsigned int frameNumber);
+	Util::Vector prefferedfollowLeaderForce(float timeStamp, float dt, unsigned int frameNumber);
+	Util::Vector calcProximityForceFollowLeader(float dt);
+	Util::Vector calcRepulsionForceFleeing(float dt);
+	Util::Vector calcRepulsionForceEvading(float dt);
+	Util::Vector calcWallRepulsionForceFleeing(float dt);
+	Util::Vector calcAgentRepulsionForceEvading(float dt);
 
 
 	void calcNextStep(float dt);

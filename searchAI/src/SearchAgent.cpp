@@ -41,7 +41,7 @@ void SearchAgent::reset(const SteerLib::AgentInitialConditions & initialConditio
 {
 	// compute the "old" bounding box of the agent before it is reset.  its OK that it will be invalid if the agent was previously disabled
 	// because the value is not used in that case.
-	std::cout<<"Reset is called";
+	std::cout<<"Reset is called"<< std::endl;
 	Util::AxisAlignedBox oldBounds(__position.x-_radius, __position.x+_radius, 0.0f, 0.0f, __position.z-_radius, __position.z+_radius);
 
 	// initialize the agent based on the initial conditions
@@ -71,6 +71,7 @@ void SearchAgent::reset(const SteerLib::AgentInitialConditions & initialConditio
 	// iterate over the sequence of goals specified by the initial conditions.
 	for (unsigned int i=0; i<initialConditions.goals.size(); i++) {
 		if (initialConditions.goals[i].goalType == SteerLib::GOAL_TYPE_SEEK_STATIC_TARGET) {
+			std::cout << "add goal" << std::endl;
 			_goalQueue.push(initialConditions.goals[i]);
 			if (initialConditions.goals[i].targetIsRandom) {
 				// if the goal is random, we must randomly generate the goal.
@@ -90,9 +91,10 @@ void SearchAgent::reset(const SteerLib::AgentInitialConditions & initialConditio
 
 void SearchAgent::computePlan()
 {
-	std::cout<<"\nComputing agent plan ";
+	std::cout<<"\nComputing agent plan "<<std::endl;
 	if (!_goalQueue.empty())
 	{
+		std::cout << "\nwe in goal queue " << std::endl;
 		Util::Point global_goal = _goalQueue.front().targetLocation;
 		if (astar.computePath(__path, __position, _goalQueue.front().targetLocation, gSpatialDatabase))
 		{
@@ -116,8 +118,9 @@ void SearchAgent::computePlan()
 		// 		_goalQueue.push(_goalQueue.front());
 		// }
 	}
-
-
+	else {
+		std::cout << "\ngoal queue empty" << std::endl;
+	}
 }
 
 
@@ -132,7 +135,7 @@ void SearchAgent::updateAI(float timeStamp, float dt, unsigned int frameNumber)
 		if(!_goalQueue.empty())
 		{
 			__position = _goalQueue.front().targetLocation;
-			std::cout<<"Waypoint: "<< __position;
+			std::cout<<"Waypoint: "<< __position<< std::endl;
 			_goalQueue.pop();
 			last_waypoint++;
 		}
