@@ -26,7 +26,7 @@ ifeq ($(config),debug)
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DDEBUG
   INCLUDES  += -I../../steerlib/include -I../../steersim/include -I../../steersimlib/include -I../../external -I../../util/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -std=c++11 -g -std=c++11x -ggdb `pkg-config --cflags gl` `pkg-config --cflags glu`
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -std=c++11 -g -std=c++11 -ggdb `pkg-config --cflags gl` `pkg-config --cflags glu`
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -Wl,-rpath,/home/parthmehrotra/a5/steersuite-rutgers/build/lib `pkg-config --libs gl` `pkg-config --libs glu` -L../lib
   LIBS      += -lsteerlib -lsteersimlib -lutil -lglfw -lX11 -ltinyxml -ldl -lpthread
@@ -48,7 +48,7 @@ ifeq ($(config),release)
   DEFINES   += -DENABLE_GUI -DENABLE_GLFW -DNDEBUG
   INCLUDES  += -I../../steerlib/include -I../../steersim/include -I../../steersimlib/include -I../../external -I../../util/include
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -std=c++11 -g -std=c++11x -ggdb `pkg-config --cflags gl` `pkg-config --cflags glu`
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -Wall -g -O2 -std=c++11 -g -std=c++11 -ggdb `pkg-config --cflags gl` `pkg-config --cflags glu`
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -Wl,-rpath,/home/parthmehrotra/a5/steersuite-rutgers/build/lib `pkg-config --libs gl` `pkg-config --libs glu` -L../lib
   LIBS      += -lsteerlib -lsteersimlib -lutil -lglfw -lX11 -ltinyxml -ldl -lpthread

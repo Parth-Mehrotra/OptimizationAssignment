@@ -896,12 +896,16 @@ namespace SteerLib
 
 
 	bool AStarPlanner::computePath(std::vector<Util::Point>& agent_path, Util::Point start, Util::Point goal, SteerLib::SpatialDataBaseInterface * _gSpatialDatabase, bool append_to_path) {
+		std::cout << start << std::endl;
+		std::cout << goal << std::endl;
 		gSpatialDatabase = _gSpatialDatabase;
 		int kindOfAStar;
 		std::cout << "enter a kind of A* (0:Weighted A*, 1:ARA*, 2:AD*): " << std::endl;
-		std::cin >> kindOfAStar;
+		//std::cin >> kindOfAStar;
+		kindOfAStar = 0;
 		std::cout << "enter a weight: " << std::endl;
-		std::cin >> w;
+		//std::cin >> w;
+		w = 100;
 		 //w = 10;
 		 w_s = 0;
 		 maxTime = 10;
@@ -934,7 +938,10 @@ namespace SteerLib
 				return true;
 				//return ADStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
 			default:
-				return weightedAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+				std::cout << "made it here" << std::endl;
+				bool result = weightedAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
+				std::cout << result << std::endl;
+				return result;
 		 }
 		 
 		//return ARAStar(agent_path, start, goal, _gSpatialDatabase, append_to_path);
