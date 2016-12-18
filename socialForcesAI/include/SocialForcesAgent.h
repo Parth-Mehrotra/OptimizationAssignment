@@ -107,6 +107,8 @@ private:
 	Util::Vector calcWallNormal(SteerLib::ObstacleInterface* obs);
 	std::pair<Util::Point, Util::Point> calcWallPointsFromNormal(SteerLib::ObstacleInterface* obs, Util::Vector normal);
 	Util::Vector calcObsNormal(SteerLib::ObstacleInterface* obs);
+	void ingress();
+	void ingress2();
 
 	// For midterm planning stores the plan to the current goal
 	// holds the location of the best local target along the midtermpath

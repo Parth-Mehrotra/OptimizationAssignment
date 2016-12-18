@@ -1,0 +1,2 @@
+./buildall linux 
+cd ..;

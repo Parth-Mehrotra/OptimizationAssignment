@@ -97,7 +97,7 @@ project "steersim"
 	}
 
 	targetdir "bin"
-	buildoptions("-std=c++11x -ggdb" )	
+	buildoptions("-std=c++11 -ggdb" )	
 
 	-- linux library cflags and libs
 	configuration { "linux", "gmake" }

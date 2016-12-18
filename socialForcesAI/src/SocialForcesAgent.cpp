@@ -84,6 +84,27 @@ void SocialForcesAgent::disable()
 
 }
 
+void SocialForcesAgent::ingress() {
+	SteerLib::AgentGoalInfo finish = _goalQueue.front();
+	_goalQueue.pop();
+
+	if (finish.targetLocation.z > 0) {
+		SteerLib::AgentGoalInfo goal;
+		goal.targetLocation = Point(6, 0, 35);
+		_goalQueue.push(goal);
+	}
+	if (finish.targetLocation.z <= 0) {
+		SteerLib::AgentGoalInfo goal;
+		goal.targetLocation = Point(6, 0, -35);
+		_goalQueue.push(goal);
+	}
+	_goalQueue.push(finish);
+}
+
+void SocialForcesAgent::ingress2() 
+{}
+
+
 void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialConditions, SteerLib::EngineInterface * engineInfo)
 {
 	// compute the "old" bounding box of the agent before it is reset.  its OK that it will be invalid if the agent was previously disabled
@@ -138,8 +159,11 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 
 	if (initialConditions.goals.size() == 0)
 	{
+		std::cout << "ERROR" << std::endl;
 		throw Util::GenericException("No goals were specified!\n");
 	}
+	
+	//std::cout << _goalQueue << std::endl;
 
 	while (!_goalQueue.empty())
 	{
@@ -154,7 +178,7 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			if (initialConditions.goals[i].targetIsRandom)
 			{
 				// if the goal is random, we must randomly generate the goal.
-				// std::cout << "assigning random goal" << std::endl;
+				std::cout << "assigning random goal" << std::endl;
 				SteerLib::AgentGoalInfo _goal;
 				_goal.targetLocation = getSimulationEngine()->getSpatialDatabase()->randomPositionWithoutCollisions(1.0f, true);
 				_goalQueue.push(_goal);
@@ -162,6 +186,7 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			}
 			else
 			{
+				std::cout << "not random" << std::endl;
 				_goalQueue.push(initialConditions.goals[i]);
 			}
 		}
@@ -169,7 +194,7 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			throw Util::GenericException("Unsupported goal type; SocialForcesAgent only supports GOAL_TYPE_SEEK_STATIC_TARGET and GOAL_TYPE_AXIS_ALIGNED_BOX_GOAL.");
 		}
 	}
-
+	ingress();
 	runLongTermPlanning(_goalQueue.front().targetLocation, dont_plan);
 
 	// std::cout << "first waypoint: " << _waypoints.front() << " agents position: " << position() << std::endl;
@@ -806,7 +831,7 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 		// throw GenericException("SocialForces numerical issue");
 	}
 	Util::Vector proximityForce = calcProximityForce(dt);
-// #define _DEBUG_ 1
+ //#define _DEBUG_ 1
 #ifdef _DEBUG_
 	std::cout << "agent" << id() << " repulsion force " << repulsionForce << std::endl;
 	std::cout << "agent" << id() << " proximity force " << proximityForce << std::endl;
