@@ -1,2 +1,2 @@
 cd bin;
-./steersim -testcase ../../testcases/plane_ingress.xml -ai sfAI;
+./steersim -testcase ../../testcases/plane_egress.xml -ai sfAI;

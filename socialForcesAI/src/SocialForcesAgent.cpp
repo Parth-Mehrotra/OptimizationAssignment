@@ -121,7 +121,7 @@ void SocialForcesAgent::egress() {
 	}
 
 	SteerLib::AgentGoalInfo goal;
-	goal.targetLocation = Util::Point(-3, 0, position.z );
+	goal.targetLocation = Util::Point(-3, 0, _position.z );
 	_goalQueue.push(goal);
 	goal.targetLocation = Util::Point(-3, 0, 38 * mod);
 	_goalQueue.push(goal);
@@ -217,7 +217,7 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			throw Util::GenericException("Unsupported goal type; SocialForcesAgent only supports GOAL_TYPE_SEEK_STATIC_TARGET and GOAL_TYPE_AXIS_ALIGNED_BOX_GOAL.");
 		}
 	}
-	ingress();
+	egress();
 	runLongTermPlanning(_goalQueue.front().targetLocation, false);
 
 	// std::cout << "first waypoint: " << _waypoints.front() << " agents position: " << position() << std::endl;
@@ -813,6 +813,46 @@ void SocialForcesAgent::computeNeighbors()
 
 void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNumber)
 {
+	std::cout << wait << std::endl;
+	if (wait <= 0) {
+		started = true;
+		wait = 0;
+		brake = 1;
+	} else {
+		brake = 0;
+	}
+
+	if (!started) {
+
+		if (_position.x == -0.2f) {
+			started = true;
+			wait = 0;
+		} else if  (_position.x == -5) {
+			if (!set) {
+				wait = 15;
+				set = true;
+			}
+			wait -= dt;
+		} else if (_position.x == 2.2f) {
+			if (!set) {
+				wait = 30;
+				set = true;
+			}
+			wait -= dt;
+		} else if (_position.x == -7.4f) {
+			if (!set) {
+				wait = 45;
+				set = true;
+			}
+			wait -= dt;
+		} else if (_position.x == -9.8f) {
+			if (!set) {
+				wait = 60;
+				set = true;
+			}
+			wait -= dt;
+		}
+	}
 	//std::cout << timeStamp << std::endl;
 	// std::cout << "_SocialForcesParams.rvo_max_speed " << _SocialForcesParams._SocialForcesParams.rvo_max_speed << std::endl;
 
@@ -895,6 +935,7 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 	// _velocity = velocity() + repulsionForce + proximityForce;
 
 	_velocity = clamp(velocity(), _SocialForcesParams.sf_max_speed);
+	_velocity *= brake;
 	_velocity.y=0.0f;
 #ifdef _DEBUG_
 	std::cout << "agent" << id() << " speed is " << velocity().length() << std::endl;

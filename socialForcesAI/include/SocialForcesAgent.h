@@ -98,6 +98,10 @@ private:
 
 
 	bool triedPathing = false;
+	bool started = false;
+	bool set = false;
+	float wait = 2;
+	float brake = 0;
 	void calcNextStep(float dt);
 	Util::Vector calcRepulsionForce(float dt);
 	Util::Vector calcProximityForce(float dt);
@@ -109,7 +113,7 @@ private:
 	std::pair<Util::Point, Util::Point> calcWallPointsFromNormal(SteerLib::ObstacleInterface* obs, Util::Vector normal);
 	Util::Vector calcObsNormal(SteerLib::ObstacleInterface* obs);
 	void ingress();
-	void ingress2();
+	void egress();
 
 	// For midterm planning stores the plan to the current goal
 	// holds the location of the best local target along the midtermpath
