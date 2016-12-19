@@ -97,6 +97,7 @@ private:
 	// bool hasLineOfSightTo(Util::Point point);
 
 
+	bool triedPathing = false;
 	void calcNextStep(float dt);
 	Util::Vector calcRepulsionForce(float dt);
 	Util::Vector calcProximityForce(float dt);

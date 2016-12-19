@@ -84,26 +84,52 @@ void SocialForcesAgent::disable()
 
 }
 
+//inspired by: https://www.youtube.com/watch?v=8qLOXwUvVEM
 void SocialForcesAgent::ingress() {
 	SteerLib::AgentGoalInfo finish = _goalQueue.front();
 	_goalQueue.pop();
 
+	int mod = 0;
+
 	if (finish.targetLocation.z > 0) {
-		SteerLib::AgentGoalInfo goal;
-		goal.targetLocation = Point(10, 0, 35);
-		_goalQueue.push(goal);
+		mod = 1;
+	} else {
+		mod = -1;
 	}
-	if (finish.targetLocation.z <= 0) {
-		SteerLib::AgentGoalInfo goal;
-		goal.targetLocation = Point(10, 0, -35);
-		_goalQueue.push(goal);
-	}
+
+	SteerLib::AgentGoalInfo goal;
+	goal.targetLocation = Util::Point(12 + 4, 0, 38 * mod );
+	_goalQueue.push(goal);
+	goal.targetLocation = Util::Point(-3, 0, 38 * mod);
+	_goalQueue.push(goal);
+	goal.targetLocation = Util::Point(-3, 0, finish.targetLocation.z);
+	_goalQueue.push(goal);
+
 	_goalQueue.push(finish);
 }
 
-void SocialForcesAgent::ingress2() 
-{}
+void SocialForcesAgent::egress() {
+	SteerLib::AgentGoalInfo finish = _goalQueue.front();
+	_goalQueue.pop();
 
+	int mod = 0;
+
+	if (_position.z > 0) {
+		mod = 1;
+	} else {
+		mod = -1;
+	}
+
+	SteerLib::AgentGoalInfo goal;
+	goal.targetLocation = Util::Point(-3, 0, position.z );
+	_goalQueue.push(goal);
+	goal.targetLocation = Util::Point(-3, 0, 38 * mod);
+	_goalQueue.push(goal);
+	goal.targetLocation = Util::Point(10, 0, 38 * mod);
+	_goalQueue.push(goal);
+
+	_goalQueue.push(finish);
+}
 
 void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialConditions, SteerLib::EngineInterface * engineInfo)
 {
@@ -159,7 +185,6 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 
 	if (initialConditions.goals.size() == 0)
 	{
-		std::cout << "ERROR" << std::endl;
 		throw Util::GenericException("No goals were specified!\n");
 	}
 	
@@ -178,7 +203,6 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			if (initialConditions.goals[i].targetIsRandom)
 			{
 				// if the goal is random, we must randomly generate the goal.
-				std::cout << "assigning random goal" << std::endl;
 				SteerLib::AgentGoalInfo _goal;
 				_goal.targetLocation = getSimulationEngine()->getSpatialDatabase()->randomPositionWithoutCollisions(1.0f, true);
 				_goalQueue.push(_goal);
@@ -186,7 +210,6 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 			}
 			else
 			{
-				std::cout << "not random" << std::endl;
 				_goalQueue.push(initialConditions.goals[i]);
 			}
 		}
@@ -790,7 +813,25 @@ void SocialForcesAgent::computeNeighbors()
 
 void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNumber)
 {
+	//std::cout << timeStamp << std::endl;
 	// std::cout << "_SocialForcesParams.rvo_max_speed " << _SocialForcesParams._SocialForcesParams.rvo_max_speed << std::endl;
+
+	if (timeStamp > 115 && !triedPathing) {
+		bool worked = runLongTermPlanning(_goalQueue.front().targetLocation, false);
+		triedPathing = true;
+		if (!worked && _goalQueue.size() > 1) {
+			_goalQueue.pop();
+			worked = runLongTermPlanning(_goalQueue.front().targetLocation, false);
+			if (!worked) {
+				SteerLib::AgentGoalInfo goalInfo = _goalQueue.front();
+				_goalQueue.pop();
+				SteerLib::AgentGoalInfo goal;
+				goal.targetLocation = Util::Point(_position.x, 0, -2);
+				_goalQueue.push(goal);
+				_goalQueue.push(goalInfo);
+			}
+		}
+	}
 	Util::AutomaticFunctionProfiler profileThisFunction( &SocialForcesGlobals::gPhaseProfilers->aiProfiler );
 	if (!enabled())
 	{
@@ -798,11 +839,10 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 	}
 
 	Util::AxisAlignedBox oldBounds(_position.x - _radius, _position.x + _radius, 0.0f, 0.0f, _position.z - _radius, _position.z + _radius);
-	std::cout << "q size: " << _goalQueue.size() << std::endl;
+	//std::cout << "q size: " << _goalQueue.size() << std::endl;
 
 	SteerLib::AgentGoalInfo goalInfo = _goalQueue.front();
 	Util::Vector goalDirection;
-	// std::cout << "midtermpath empty: " << _midTermPath.empty() << std::endl;
 	if ( ! _midTermPath.empty() && (!this->hasLineOfSightTo(goalInfo.targetLocation)) )
 	{
 		if (reachedCurrentWaypoint())
@@ -891,17 +931,10 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 		if (_goalQueue.size() != 0)
 		{
 			// in this case, there are still more goals, so start steering to the next goal.
-			if(!runLongTermPlanning(_goalQueue.front().targetLocation, false)) {
-				Util::Point n = _goalQueue.front().targetLocation;
-				n.x = -2;
-				SteerLib::AgentGoalInfo dest = _goalQueue.front();
-				_goalQueue.pop();
-				SteerLib::AgentGoalInfo goal;
-				goal.targetLocation = n;
-				_goalQueue.push(goal);
-				_goalQueue.push(dest);
-				runLongTermPlanning(_goalQueue.front().targetLocation, false);
-			}
+			goalDirection = _goalQueue.front().targetLocation - _position;
+			_prefVelocity = Util::Vector(goalDirection.x, 0.0f, goalDirection.z);
+		} else if (_goalQueue.size() == 1) {
+			runLongTermPlanning(_goalQueue.front().targetLocation, false);
 			goalDirection = _goalQueue.front().targetLocation - _position;
 			_prefVelocity = Util::Vector(goalDirection.x, 0.0f, goalDirection.z);
 		}
