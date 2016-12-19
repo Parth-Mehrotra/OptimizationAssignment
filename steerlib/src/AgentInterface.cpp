@@ -107,9 +107,8 @@ bool AgentInterface::runLongTermPlanning(Util::Point goalLocation, bool dontPlan
 	Util::Point pos =  position();
 	// std::cout << "this is the planner AgentInterface:" << getSimulationEngine()->getPathPlanner() << std::endl;
 	SteerLib::PlanningDomainInterface * planner = getSimulationEngine()->getPathPlanner();
-	if ( !planner->findPath(pos, goalLocation,
-			agentPath, (unsigned int) 100000))
-	{
+	if ( !planner->findPath(pos, goalLocation, agentPath, (unsigned int) 100000)) {
+		std::cout << "failed" << std::endl;
 		return false;
 	}
 
@@ -226,6 +225,7 @@ void AgentInterface::updateMidTermPath()
 {
 	if ( this->_midTermPath.size() < FURTHEST_LOCAL_TARGET_DISTANCE)
 	{
+		std::cout << "early return" << std::endl;
 		return;
 	}
 	if ( !_waypoints.empty())

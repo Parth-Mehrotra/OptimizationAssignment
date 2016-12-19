@@ -90,12 +90,12 @@ void SocialForcesAgent::ingress() {
 
 	if (finish.targetLocation.z > 0) {
 		SteerLib::AgentGoalInfo goal;
-		goal.targetLocation = Point(6, 0, 35);
+		goal.targetLocation = Point(10, 0, 35);
 		_goalQueue.push(goal);
 	}
 	if (finish.targetLocation.z <= 0) {
 		SteerLib::AgentGoalInfo goal;
-		goal.targetLocation = Point(6, 0, -35);
+		goal.targetLocation = Point(10, 0, -35);
 		_goalQueue.push(goal);
 	}
 	_goalQueue.push(finish);
@@ -195,7 +195,7 @@ void SocialForcesAgent::reset(const SteerLib::AgentInitialConditions & initialCo
 		}
 	}
 	ingress();
-	runLongTermPlanning(_goalQueue.front().targetLocation, dont_plan);
+	runLongTermPlanning(_goalQueue.front().targetLocation, false);
 
 	// std::cout << "first waypoint: " << _waypoints.front() << " agents position: " << position() << std::endl;
 	/*
@@ -798,6 +798,7 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 	}
 
 	Util::AxisAlignedBox oldBounds(_position.x - _radius, _position.x + _radius, 0.0f, 0.0f, _position.z - _radius, _position.z + _radius);
+	std::cout << "q size: " << _goalQueue.size() << std::endl;
 
 	SteerLib::AgentGoalInfo goalInfo = _goalQueue.front();
 	Util::Vector goalDirection;
@@ -807,10 +808,15 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 		if (reachedCurrentWaypoint())
 		{
 			this->updateMidTermPath();
+			//if (!_goalQueue.empty()) {
+			//	SteerLib::AgentGoalInfo goalInfo = _goalQueue.front();
+			//	runLongTermPlanning(goalInfo.targetLocation, false);
+			//	std::cout << "Long term planning run: " << _goalQueue.size() << std::endl;
+			//}
 		}
 
 		this->updateLocalTarget();
-
+		
 		goalDirection = normalize(_currentLocalTarget - position());
 
 	}
@@ -885,6 +891,17 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 		if (_goalQueue.size() != 0)
 		{
 			// in this case, there are still more goals, so start steering to the next goal.
+			if(!runLongTermPlanning(_goalQueue.front().targetLocation, false)) {
+				Util::Point n = _goalQueue.front().targetLocation;
+				n.x = -2;
+				SteerLib::AgentGoalInfo dest = _goalQueue.front();
+				_goalQueue.pop();
+				SteerLib::AgentGoalInfo goal;
+				goal.targetLocation = n;
+				_goalQueue.push(goal);
+				_goalQueue.push(dest);
+				runLongTermPlanning(_goalQueue.front().targetLocation, false);
+			}
 			goalDirection = _goalQueue.front().targetLocation - _position;
 			_prefVelocity = Util::Vector(goalDirection.x, 0.0f, goalDirection.z);
 		}
